@@ -1,0 +1,71 @@
+#开发环境配置
+
+server:
+  # 服务端口
+  port: 8999
+
+
+spring:
+  # 数据源配置，请修改为你项目的实际配置
+  datasource:
+    username: "root"
+    password: "root"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/lin_cmsflask?useSSL=false&serverTimezone=UTC&characterEncoding=UTF8
+    #initialization-mode: always
+
+
+# 开启权限拦截
+auth:
+  enabled: false
+
+# 开启登录要求验证码
+login-captcha:
+  enabled: true
+  secret: "m49CPM5ak@MDXTzbbT_ZEyMM3KBsBn!h"
+
+# 开启http请求日志记录
+request-log:
+  enabled: true
+
+
+logging:
+  level:
+    # web信息日志记录
+    web: debug
+    # SQL日志记录
+    io.github.talelin.latticy.mapper: debug
+
+
+batchfilespath:
+  filespaths:
+    - C:/Users/29686/Desktop/service/coreIndex
+    - C:/Users/29686/Desktop/service/finAnalysisIndex
+    - C:/Users/29686/Desktop/service/growthIndex
+    - C:/Users/29686/Desktop/service/dupontAnalysisIndex
+    - C:/Users/29686/Desktop/service/stockValue
+    - C:/Users/29686/Desktop/service/tecAnalysisIndex
+    - C:/Users/29686/Desktop/service/industryClass
+    - C:/Users/29686/Desktop/service/secBasicIndex
+    - C:/Users/29686/Desktop/service/listingDate
+  filetypes:
+    - CWFXZB
+    - CZZB
+    - DBFXZB
+    - GPGZ
+    - JSFXZB
+    - HYFL
+    - ZQJCZB
+  uploadfilesmap:
+    HXZB: 'C:\Users\29686\Desktop\service\coreIndex'
+    CWFXZB: 'C:\Users\29686\Desktop\service\finAnalysisIndex'
+    CZZB: 'C:\Users\29686\Desktop\service\growthIndex'
+    DBFXZB: 'C:\Users\29686\Desktop\service\dupontAnalysisIndex'
+    GPGZ: 'C:\Users\29686\Desktop\service\stockValue'
+    JSFXZB: 'C:\Users\29686\Desktop\service\tecAnalysisIndex'
+    HYFL: 'C:\Users\29686\Desktop\service\industryClass'
+    ZQJCZB: 'C:\Users\29686\Desktop\service\secBasicIndex'
+    REC8: 'C:\Users\29686\Desktop\service\coreIndex'
+    SSRQ: 'C:\Users\29686\Desktop\service\listingDate'
+
+

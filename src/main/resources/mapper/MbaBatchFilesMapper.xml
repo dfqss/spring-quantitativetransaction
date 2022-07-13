@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.github.talelin.latticy.mapper.MbaBatchFilesMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="io.github.talelin.latticy.model.MbaBatchFilesDO">
+        <result column="file_name" property="fileName"/>
+        <result column="file_path" property="filePath"/>
+        <result column="file_periods" property="file_periods"/>
+        <result column="status" property="status"/>
+        <result column="description" property="description"/>
+        <result column="cal_date" property="calDate"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="delete_time" property="deleteTime"/>
+    </resultMap>
+
+    <insert id="createBatchFiles">
+        INSERT INTO mba_batch_files(is_deleted, file_name, file_path, file_periods,
+        status, cal_date, create_time, update_time)
+        select '0', #{fileName}, #{filePath}, IFNULL( MAX( file_periods ), 0 )+ 1,
+        '0', DATE_FORMAT(now(),'%Y-%m-%d'), now(), now() from mba_batch_files where file_name like #{type}
+    </insert>
+
+    <update id="updateBatchFilesStatus">
+        update mba_batch_files set status = #{status}, description = #{description}
+        where file_name = #{fileName}
+    </update>
+    
+    <select id="fileMessage" parameterType="java.util.List" resultMap="BaseResultMap">
+        SELECT * FROM `mba_batch_files`
+        WHERE file_name LIKE concat('%',#{fileName},'%') and `status` = #{status} ORDER BY file_periods LIMIT 1
+    </select>
+
+</mapper>

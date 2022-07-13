@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.github.talelin.latticy.mapper.MbaListingDateCalMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="io.github.talelin.latticy.model.MbaListingDateCalDo">
+        <result column="code" property="code"/>
+        <result column="is_new_shares" property="isNewShares"/>
+        <result column="listing_day" property="listingDay"/>
+        <result column="ipo_date" property="ipoDate"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="delete_time" property="deleteTime"/>
+    </resultMap>
+
+    <insert id="insertBatchListingDateCal" >
+        insert into mba_listing_date_cal
+        (`code`, `is_new_shares`,
+        `listing_day`, `ipo_date`, `create_time`,
+        `update_time`)
+        values
+        <foreach collection="list" separator=","  item="item" >
+            (#{item.code},#{item.isNewShares},#{item.listingDay},#{item.ipoDate},now(),now())
+        </foreach>
+    </insert>
+
+<!--    <insert id="insertOrUpdateOneUserInfo">-->
+<!--        <selectKey keyProperty="count" resultType="int" order="BEFORE">-->
+<!--            select count(*) as count from `${tableName}` where userid = #{user.userid}-->
+<!--        </selectKey>-->
+<!--        &lt;!&ndash; 如果大于0则更新 &ndash;&gt;-->
+<!--        <if test="count>0">-->
+<!--            UPDATE  `${tableName}`-->
+<!--            <set >-->
+<!--                <if test="user.appId != null" >-->
+<!--                    `app_id` = #{user.appId},-->
+<!--                </if>-->
+<!--                <if test="user.yunid != null" >-->
+<!--                    `yunid` = #{user.yunid},-->
+<!--                </if>-->
+<!--                <if test="user.qr_scene != null" >-->
+<!--                    `qr_scene` = #{user.qr_scene},-->
+<!--                </if>-->
+<!--                <if test="user.openid != null" >-->
+<!--                    `openid` = #{user.openid},-->
+<!--                </if>-->
+<!--                <if test="user.qr_scene_str != null" >-->
+<!--                    `qr_scene_str` = #{user.qr_scene_str},-->
+<!--                </if>-->
+<!--                <if test="user.nickname != null" >-->
+<!--                    `nickname` = #{user.nickname},-->
+<!--                </if>-->
+<!--                <if test="user.language != null" >-->
+<!--                    `language` = #{user.language},-->
+<!--                </if>-->
+<!--                <if test="user.city != null" >-->
+<!--                    `city` = #{user.city},-->
+<!--                </if>-->
+<!--                <if test="user.country != null" >-->
+<!--                    `country` = #{user.country},-->
+<!--                </if>-->
+<!--                <if test="user.remark != null" >-->
+<!--                    `remark` = #{user.remark},-->
+<!--                </if>-->
+<!--                <if test="user.headimgurl != null" >-->
+<!--                    `headimgurl` = #{user.headimgurl},-->
+<!--                </if>-->
+<!--                <if test="user.province != null" >-->
+<!--                    `province` = #{user.province},-->
+<!--                </if>-->
+<!--                <if test="user.tagIdList != null" >-->
+<!--                    `tagid_list` = #{user.tagIdList},-->
+<!--                </if>-->
+<!--                <if test="user.subscribe_scene != null" >-->
+<!--                    `subscribe_scene` = #{user.subscribe_scene},-->
+<!--                </if>-->
+<!--                <if test="user.unionid != null" >-->
+<!--                    `unionid` = #{user.unionid},-->
+<!--                </if>-->
+<!--                <if test="user.subscribe != null" >-->
+<!--                    `subscribe` = #{user.subscribe},-->
+<!--                </if>-->
+<!--                <if test="user.groupid != null" >-->
+<!--                    `groupid` = #{user.groupid},-->
+<!--                </if>-->
+<!--                <if test="user.subTime != null" >-->
+<!--                    `subscribe_time` = #{user.subTime},-->
+<!--                </if>-->
+<!--                <if test="user.sexStr != null" >-->
+<!--                    `sex` = #{user.sexStr},-->
+<!--                </if>-->
+<!--                <if test="user.updatedAt != null" >-->
+<!--                    `updated_at` = #{user.updatedAt},-->
+<!--                </if>-->
+<!--            </set>-->
+<!--            WHERE userid = #{user.userid}-->
+<!--        </if>-->
+<!--        &lt;!&ndash; 如果等于0则保存 &ndash;&gt;-->
+<!--        <if test="count==0">-->
+<!--            INSERT IGNORE INTO `${tableName}`-->
+<!--            (-->
+<!--            <include refid="wx_temp_params" />-->
+<!--            )-->
+<!--            values-->
+<!--            (-->
+<!--            #{user.appId},#{user.yunid},#{user.userid},#{user.point},#{user.qr_scene},-->
+<!--            #{user.openid},#{user.qr_scene_str},#{user.nickname},#{user.language},#{user.city},-->
+<!--            #{user.country},#{user.remark},#{user.headimgurl},#{user.province},#{user.tagIdList},-->
+<!--            #{user.subscribe_scene},#{user.unionid},#{user.subscribe},#{user.groupid},#{user.subTime},-->
+<!--            #{user.sexStr},#{user.createdAt},#{user.updatedAt}-->
+<!--            )-->
+<!--        </if>-->
+<!--    </insert>-->
+
+</mapper>
