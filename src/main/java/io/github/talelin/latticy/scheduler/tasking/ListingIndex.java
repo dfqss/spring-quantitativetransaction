@@ -31,9 +31,8 @@ public class ListingIndex {
      * 批量创建或更新上市日期表
      */
     public void createOrUpdateListingDateCal() {
-        //获取要读取文件的信息
+        //0.获取要读取文件的信息
         List<MbaBatchFilesDO> fileMessages = getFileNames("SSRQ", "0");
-        System.out.println(fileMessages);
         //1.没有查询到要读取的文件直接返回
         if (fileMessages.size() <= 0) {
             log.info("没有需要更新的上市日期数据");

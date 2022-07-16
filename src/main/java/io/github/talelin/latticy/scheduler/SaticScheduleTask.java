@@ -4,6 +4,7 @@ package io.github.talelin.latticy.scheduler;
 import io.github.talelin.latticy.configuration.ApplicatinConfiguration;
 import io.github.talelin.latticy.scheduler.tasking.BatchFiles;
 import io.github.talelin.latticy.scheduler.tasking.ListingIndex;
+import io.github.talelin.latticy.scheduler.tasking.OtherIndex;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -32,9 +33,12 @@ public class SaticScheduleTask  {
     @Autowired
     private ListingIndex listingIndex;
 
+    @Autowired
+    private OtherIndex otherIndex;
+
     //4.添加定时任务
     @Async //异步执行
-    @Scheduled(cron = "0/60 * * * * ?")//或直接指定时间间隔，例如：5秒 @Scheduled(fixedRate=5000)
+    @Scheduled(cron = "0 1 * * * ?")//或直接指定时间间隔，例如：5秒 @Scheduled(fixedRate=5000)
     public void configureTasks() {
         System.err.println("执行静态定时任务时间: " + LocalDateTime.now());
         batchFiles.readFile();
@@ -42,10 +46,17 @@ public class SaticScheduleTask  {
 
 
     @Async
-    @Scheduled(cron = "0/20 * * * * ?")
+    @Scheduled(cron = "0 1 * * * ?")
     public void importListingData() {
         System.err.println("执行静态定时任务时间: " + LocalDateTime.now());
         listingIndex.createOrUpdateListingDateCal();
+    }
+
+    @Async
+    @Scheduled(cron = "0/10 * * * * ?")
+    public void importOtherIndex() {
+        System.err.println("执行静态定时任务时间: " + LocalDateTime.now());
+        otherIndex.createOrUpdateOtherIndex();
     }
 
 
