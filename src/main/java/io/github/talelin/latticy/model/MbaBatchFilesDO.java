@@ -1,6 +1,10 @@
 package io.github.talelin.latticy.model;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -9,8 +13,7 @@ import java.util.Date;
 
 @Data
 @TableName("mba_batch_files")
-@EqualsAndHashCode(callSuper = true)
-public class MbaBatchFilesDO extends BaseModel implements Serializable {
+public class MbaBatchFilesDO implements Serializable {
 
     private static final long serialversionUID = -1463999455544707735L;
 
@@ -45,4 +48,16 @@ public class MbaBatchFilesDO extends BaseModel implements Serializable {
      *计算日期
      */
     private Date calDate;
+
+    @JsonIgnore
+    @TableField(fill =  FieldFill.INSERT)
+    private Date createTime;
+
+    @JsonIgnore
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private Date updateTime;
+
+    @TableLogic
+    @JsonIgnore
+    private Date deleteTime;
 }

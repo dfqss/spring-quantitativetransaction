@@ -11,7 +11,7 @@ spring:
     username: "root"
     password: "root"
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/lin_cmsflask?useSSL=false&serverTimezone=UTC&characterEncoding=UTF8
+    url: jdbc:mysql://localhost:3306/lin_cmsflask?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF8&useUnicode=true&amp
     #initialization-mode: always
 
 

@@ -1,9 +1,6 @@
 package io.github.talelin.latticy.model;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
@@ -128,9 +125,11 @@ public class MbaFinAnalysisIndexDO implements Serializable {
     private String bps;
 
     @JsonIgnore
+    @TableField(fill =  FieldFill.INSERT)
     private Date createTime;
 
     @JsonIgnore
+    @TableField(fill =  FieldFill.INSERT_UPDATE)
     private Date updateTime;
 
     @TableLogic

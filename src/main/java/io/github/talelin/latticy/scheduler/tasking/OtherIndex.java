@@ -3,12 +3,10 @@ package io.github.talelin.latticy.scheduler.tasking;
 import com.alibaba.fastjson.JSON;
 import io.github.talelin.latticy.common.constant.FileLogoConstant;
 import io.github.talelin.latticy.common.util.ExcelUtil;
-import io.github.talelin.latticy.dto.book.CreateOrUpdateBookDTO;
 import io.github.talelin.latticy.model.*;
 import io.github.talelin.latticy.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -97,8 +95,6 @@ public class OtherIndex {
                 for (HashMap map : execlDate) {
                     MbaFinAnalysisIndexDO mbaFinAnalysisIndexDO = JSON.parseObject(JSON.toJSONString(map), MbaFinAnalysisIndexDO.class);
                     mbaFinAnalysisIndexDO.setIsDeleted(0);
-                    mbaFinAnalysisIndexDO.setCreateTime(new Date());
-                    mbaFinAnalysisIndexDO.setUpdateTime(new Date());
                     mbaFinAnalysisIndexDOList.add(mbaFinAnalysisIndexDO);
                 }
                 resultFlag = mbaFinAnalysisIndexService.saveOrUpdateBatch(mbaFinAnalysisIndexDOList);
@@ -109,8 +105,6 @@ public class OtherIndex {
                 for (HashMap map : execlDate) {
                     MbaSecBasicIndexDO mbaSecBasicIndexDO = JSON.parseObject(JSON.toJSONString(map), MbaSecBasicIndexDO.class);
                     mbaSecBasicIndexDO.setIsDeleted(0);
-                    mbaSecBasicIndexDO.setCreateTime(new Date());
-                    mbaSecBasicIndexDO.setUpdateTime(new Date());
                     mbaSecBasicIndexDOList.add(mbaSecBasicIndexDO);
                 }
                 resultFlag = mbaSecBasicIndexService.saveOrUpdateBatch(mbaSecBasicIndexDOList);
@@ -121,8 +115,6 @@ public class OtherIndex {
                 for (HashMap map : execlDate) {
                     MbaGrowthIndexDO mbaGrowthIndexDO = JSON.parseObject(JSON.toJSONString(map), MbaGrowthIndexDO.class);
                     mbaGrowthIndexDO.setIsDeleted(0);
-                    mbaGrowthIndexDO.setCreateTime(new Date());
-                    mbaGrowthIndexDO.setUpdateTime(new Date());
                     mbaGrowthIndexDOList.add(mbaGrowthIndexDO);
                 }
                 resultFlag = mbaGrowthIndexService.saveOrUpdateBatch(mbaGrowthIndexDOList);
@@ -133,8 +125,6 @@ public class OtherIndex {
                 for (HashMap map : execlDate) {
                     MbaDupontAnalysisIndexDO mbaDupontAnalysisIndexDO = JSON.parseObject(JSON.toJSONString(map), MbaDupontAnalysisIndexDO.class);
                     mbaDupontAnalysisIndexDO.setIsDeleted(0);
-                    mbaDupontAnalysisIndexDO.setCreateTime(new Date());
-                    mbaDupontAnalysisIndexDO.setUpdateTime(new Date());
                     mbaDupontAnalysisIndexDOList.add(mbaDupontAnalysisIndexDO);
                 }
                 resultFlag = mbaDupontAnalysisIndexService.saveOrUpdateBatch(mbaDupontAnalysisIndexDOList);
@@ -145,8 +135,6 @@ public class OtherIndex {
                 for (HashMap map : execlDate) {
                     MbaStockValueDO mbaStockValueDO = JSON.parseObject(JSON.toJSONString(map), MbaStockValueDO.class);
                     mbaStockValueDO.setIsDeleted(0);
-                    mbaStockValueDO.setCreateTime(new Date());
-                    mbaStockValueDO.setUpdateTime(new Date());
                     mbaStockValueDOList.add(mbaStockValueDO);
                 }
                 resultFlag = mbaStockValueService.saveOrUpdateBatch(mbaStockValueDOList);
@@ -157,8 +145,6 @@ public class OtherIndex {
                 for (HashMap map : execlDate) {
                     MbaTecAnalysisIndexDO mbaTecAnalysisIndexDO = JSON.parseObject(JSON.toJSONString(map), MbaTecAnalysisIndexDO.class);
                     mbaTecAnalysisIndexDO.setIsDeleted(0);
-                    mbaTecAnalysisIndexDO.setCreateTime(new Date());
-                    mbaTecAnalysisIndexDO.setUpdateTime(new Date());
                     mbaTecAnalysisIndexDOList.add(mbaTecAnalysisIndexDO);
                 }
                 resultFlag = mbaTecAnalysisIndexService.saveOrUpdateBatch(mbaTecAnalysisIndexDOList);
@@ -169,8 +155,6 @@ public class OtherIndex {
                 for (HashMap map : execlDate) {
                     MbaIndustryClassDO mbaIndustryClassDO = JSON.parseObject(JSON.toJSONString(map), MbaIndustryClassDO.class);
                     mbaIndustryClassDO.setIsDeleted(0);
-                    mbaIndustryClassDO.setCreateTime(new Date());
-                    mbaIndustryClassDO.setUpdateTime(new Date());
                     mbaIndustryClassDOList.add(mbaIndustryClassDO);
                 }
                 resultFlag = mbaIndustryClassService.saveOrUpdateBatch(mbaIndustryClassDOList);

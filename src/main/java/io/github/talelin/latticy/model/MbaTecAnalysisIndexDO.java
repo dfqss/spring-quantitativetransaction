@@ -61,9 +61,11 @@ public class MbaTecAnalysisIndexDO implements Serializable {
     private String buying;
 
     @JsonIgnore
+    @TableField(fill =  FieldFill.INSERT)
     private Date createTime;
 
     @JsonIgnore
+    @TableField(fill =  FieldFill.INSERT_UPDATE)
     private Date updateTime;
 
     @TableLogic
