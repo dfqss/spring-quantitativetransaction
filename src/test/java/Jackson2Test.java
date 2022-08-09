@@ -2,6 +2,8 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.talelin.latticy.model.BookDO;
+import io.github.talelin.latticy.module.counter.CounterFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -13,15 +15,22 @@ public class Jackson2Test {
 
     @Test
     public void testMap() throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        //mapper.setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE);
-        //mapper.configOverride(Map.Entry.class).setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.OBJECT));
-        mapper.configOverride(Map.Entry.class).setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.STRING));
-        Map<String, Object> res = new HashMap<>();
-        res.put("username", "pedro");
-        res.put("userAge", 24);
-        String s = mapper.writeValueAsString(res);
-        log.info(s);
+//        ObjectMapper mapper = new ObjectMapper();
+//        //mapper.setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE);
+//        //mapper.configOverride(Map.Entry.class).setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.OBJECT));
+//        mapper.configOverride(Map.Entry.class).setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.STRING));
+//        Map<String, Object> res = new HashMap<>();
+//        res.put("username", "pedro");
+//        res.put("userAge", 24);
+//        String s = mapper.writeValueAsString(res);
+//        log.info(s);
+//        CounterFactory c = CounterFactory.COUNTER;
+//        System.out.println(c.getNextValue("test"));
+
+
+
+
+
     }
 
     @Test

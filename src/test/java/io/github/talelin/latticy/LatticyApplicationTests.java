@@ -15,7 +15,7 @@ public class LatticyApplicationTests {
 
     @Test
     public void contextLoads() {
-        System.out.println();
+        System.out.println("1");
     }
 
 }

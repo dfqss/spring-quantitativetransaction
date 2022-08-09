@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.github.talelin.latticy.mapper.OtherIndexMapper">
+
+    <insert id="saveOrUpdateBatch">
+        <choose>
+            <when test="entity.entityName=='mba_fin_analysis_index'">
+                insert into mba_fin_analysis_index (
+                is_deleted,code,code_name,roa,tot_ope_rev,
+                ope_rev,goodwill,roe_avg,segment_sales,r_and_d_costs,
+                debt_to_assets,roe_basic,net_profit_margin,gross_profit_margin,cash_to_current_debt,
+                eps_basic,bps,or_ps,pb,gr_ps,cf_ps,pe,update_time,create_time)
+                VALUES
+                <foreach collection="batchList" item="otherIndexDO" open="" close="" separator=",">
+                    (0, #{otherIndexDO.code}, #{otherIndexDO.codeName}, #{otherIndexDO.roa}, #{otherIndexDO.totOpeRev},
+                    #{otherIndexDO.opeRev}, #{otherIndexDO.goodwill}, #{otherIndexDO.roeAvg},
+                    #{otherIndexDO.segmentSales}, #{otherIndexDO.rAndDCosts}, #{otherIndexDO.debtToAssets},
+                    #{otherIndexDO.roeBasic}, #{otherIndexDO.netProfitMargin}, #{otherIndexDO.grossProfitMargin},
+                    #{otherIndexDO.cashToCurrentDebt}, #{otherIndexDO.epsBasic}, #{otherIndexDO.bps},
+                    #{otherIndexDO.orPs}, #{otherIndexDO.pb}, #{otherIndexDO.grPs}, #{otherIndexDO.cfPs},
+                    #{otherIndexDO.pe}, now(), now())
+                </foreach>
+                on duplicate key update
+                is_deleted = 0,code=values(code),code_name=values(code_name),roa=values(roa),
+                tot_ope_rev=values(tot_ope_rev),ope_rev=values(ope_rev),goodwill=values(goodwill),
+                roe_avg=values(roe_avg),segment_sales=values(segment_sales),r_and_d_costs=values(r_and_d_costs),
+                debt_to_assets=values(debt_to_assets),roe_basic=values(roe_basic),
+                net_profit_margin=values(net_profit_margin),gross_profit_margin=values(gross_profit_margin),
+                cash_to_current_debt=values(cash_to_current_debt),eps_basic=values(eps_basic),bps=values(bps),
+                or_ps=values(or_ps),pb=values(pb),gr_ps=values(gr_ps),cf_ps=values(cf_ps),pe=values(pe),
+                update_time=now()
+            </when>
+            <when test="entity.entityName=='mba_growth_index'">
+                insert into mba_growth_index (
+                is_deleted,code,code_name,growth_gr,yoy_tr,
+                yoy_assets_tb,yoy_ebt,yoy_debt,growth_or,yoy_profit,
+                fa_yoy,yoy_assets_hb,qfa_cgr_sales,qfa_cgr_profit,yoy_eps_basic,
+                yoy_or,yoy_equity,yoy_bps,yoy_op,growth_gc,
+                growth_op,qfa_cgr_op,create_time,update_time)
+                VALUES
+                <foreach collection="batchList" item="otherIndexDO" open="" close="" separator=",">
+                    (0, #{otherIndexDO.code}, #{otherIndexDO.codeName}, #{otherIndexDO.growthGr}, #{otherIndexDO.yoyTr},
+                    #{otherIndexDO.yoyAssetsTb}, #{otherIndexDO.yoyEbt}, #{otherIndexDO.yoyDebt},
+                    #{otherIndexDO.growthOr}, #{otherIndexDO.yoyProfit}, #{otherIndexDO.faYoy},
+                    #{otherIndexDO.yoyAssetsHb}, #{otherIndexDO.qfaCgrSales}, #{otherIndexDO.qfaCgrProfit},
+                    #{otherIndexDO.yoyEpsBasic}, #{otherIndexDO.yoyOr}, #{otherIndexDO.yoyEquity},
+                    #{otherIndexDO.yoyBps}, #{otherIndexDO.yoyOp}, #{otherIndexDO.growthGc}, #{otherIndexDO.growthOp},
+                    #{otherIndexDO.qfaCgrOp}, now(), now())
+                </foreach>
+                on duplicate key update
+                is_deleted = 0,code=values(code),code_name=values(code_name),growth_gr=values(growth_gr),
+                yoy_tr=values(yoy_tr),yoy_assets_tb=values(yoy_assets_tb),yoy_ebt=values(yoy_ebt),
+                yoy_debt=values(yoy_debt),growth_or=values(growth_or),yoy_profit=values(yoy_profit),
+                fa_yoy=values(fa_yoy),yoy_assets_hb=values(yoy_assets_hb),qfa_cgr_sales=values(qfa_cgr_sales),
+                qfa_cgr_profit=values(qfa_cgr_profit),yoy_eps_basic=values(yoy_eps_basic),yoy_or=values(yoy_or),
+                yoy_equity=values(yoy_equity),yoy_bps=values(yoy_bps),yoy_op=values(yoy_op),growth_gc=values(growth_gc),
+                growth_op=values(growth_op),qfa_cgr_op=values(qfa_cgr_op),update_time=now()
+            </when>
+            <when test="entity.entityName=='mba_dupont_analysis_index'">
+                insert into mba_dupont_analysis_index (
+                is_deleted,code,code_name,profit_to_gr,roe,
+                assets_turn,dupont_np,ebi_to_gr,dupont_int_burden,dupont_tax_burden,
+                update_time,create_time)
+                VALUES
+                <foreach collection="batchList" item="otherIndexDO" open="" close="" separator=",">
+                    (0,#{otherIndexDO.code}, #{otherIndexDO.codeName}, #{otherIndexDO.profitToGr},
+                    #{otherIndexDO.roe}, #{otherIndexDO.assetsTurn}, #{otherIndexDO.dupontNp}, #{otherIndexDO.ebiToGr},
+                    #{otherIndexDO.dupontIntBurden}, #{otherIndexDO.dupontTaxBurden}, now(), now())
+                </foreach>
+                on duplicate key update
+                is_deleted = 0, code=values(code),code_name=values(code_name),profit_to_gr=values(profit_to_gr),
+                roe=values(roe),assets_turn=values(assets_turn),dupont_np=values(dupont_np),ebi_to_gr=values(ebi_to_gr),
+                dupont_int_burden=values(dupont_int_burden),dupont_tax_burden=values(dupont_tax_burden),
+                update_time=now()
+            </when>
+            <when test="entity.entityName=='mba_stock_value'">
+                insert into mba_stock_value (
+                is_deleted,code,code_name,pb_mrq,eps_ttm,
+                mkt_free_shares,gr_ttm,profit_ttm,pb_lyr,or_ps_ttm,
+                mkt_cap_float,ev,or_ttm,create_time,update_time)
+                VALUES
+                <foreach collection="batchList" item="otherIndexDO" open="" close="" separator=",">
+                    (0,#{otherIndexDO.code}, #{otherIndexDO.codeName}, #{otherIndexDO.pbMrq}, #{otherIndexDO.epsTtm},
+                    #{otherIndexDO.mktFreeShares}, #{otherIndexDO.grTtm}, #{otherIndexDO.profitTtm},
+                    #{otherIndexDO.pbLyr}, #{otherIndexDO.orPsTtm}, #{otherIndexDO.mktCapFloat}, #{otherIndexDO.ev},
+                    #{otherIndexDO.orTtm}, now(), now())
+                </foreach>
+                on duplicate key update
+                is_deleted = 0,code=values(code),code_name=values(code_name),pb_mrq=values(pb_mrq),
+                eps_ttm=values(eps_ttm),mkt_free_shares=values(mkt_free_shares),gr_ttm=values(gr_ttm),
+                profit_ttm=values(profit_ttm),pb_lyr=values(pb_lyr),or_ps_ttm=values(or_ps_ttm),
+                mkt_cap_float=values(mkt_cap_float),ev=values(ev),or_ttm=values(or_ttm),update_time=now()
+            </when>
+            <when test="entity.entityName=='mba_tec_analysis_index'">
+                insert into mba_tec_analysis_index (
+                is_deleted,code,code_name,tech_bias5,bull_bear_ma,
+                breakout_ma,buying,LON,breakdown_ma,update_time,create_time)
+                VALUES
+                <foreach collection="batchList" item="otherIndexDO" open="" close="" separator=",">
+                    (0,#{otherIndexDO.code}, #{otherIndexDO.codeName}, #{otherIndexDO.techBias5},
+                    #{otherIndexDO.bullBearMa}, #{otherIndexDO.breakoutMa}, #{otherIndexDO.buying},
+                    #{otherIndexDO.lON}, #{otherIndexDO.breakdownMa}, now(), now())
+                </foreach>
+                on duplicate key update
+                is_deleted = 0,code=values(code),code_name=values(code_name),tech_bias5=values(tech_bias5),
+                bull_bear_ma=values(bull_bear_ma),breakout_ma=values(breakout_ma),buying=values(buying),
+                lON=values(lON),breakdown_ma=values(breakdown_ma),update_time=now()
+            </when>
+            <when test="entity.entityName=='mba_industry_class'">
+                insert into mba_industry_class (
+                is_deleted,code,code_name,industry_sw,industry_cit,
+                industry_cit_code,industry_sw_code,update_time,create_time)
+                VALUES
+                <foreach collection="batchList" item="otherIndexDO" open="" close="" separator=",">
+                    (0,#{otherIndexDO.code}, #{otherIndexDO.codeName}, #{otherIndexDO.industrySw},
+                    #{otherIndexDO.industryCit}, #{otherIndexDO.industryCitCode}, #{otherIndexDO.industrySwCode},
+                    now(), now())
+                </foreach>
+                on duplicate key update
+                is_deleted = 0,code=values(code),code_name=values(code_name),industry_sw=values(industry_sw),
+                industry_cit=values(industry_cit),industry_cit_code=values(industry_cit_code),
+                industry_sw_code=values(industry_sw_code),update_time=now()
+            </when>
+            <when test="entity.entityName=='mba_sec_basic_index'">
+                insert into mba_sec_basic_index (
+                is_deleted,code,code_name,rt_mkt_cap,total_shares,
+                rt_float_mkt_cap,share_issuing_mkt,free_float_shares,update_time,create_time)
+                VALUES
+                <foreach collection="batchList" item="otherIndexDO" open="" close="" separator=",">
+                    (0,#{otherIndexDO.code}, #{otherIndexDO.codeName}, #{otherIndexDO.rtMktCap},
+                    #{otherIndexDO.totalShares}, #{otherIndexDO.rtFloatMktCap}, #{otherIndexDO.shareIssuingMkt},
+                    #{otherIndexDO.freeFloatShares}, now(), now())
+                </foreach>
+                on duplicate key update
+                is_deleted = 0,code=values(code),code_name=values(code_name),rt_mkt_cap=values(rt_mkt_cap),
+                total_shares=values(total_shares),rt_float_mkt_cap=values(rt_float_mkt_cap),
+                share_issuing_mkt=values(share_issuing_mkt),free_float_shares=values(free_float_shares),
+                update_time=now()
+            </when>
+        </choose>
+    </insert>
+</mapper>

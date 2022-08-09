@@ -3,11 +3,14 @@ package io.github.talelin.latticy.controller.v1;
 import io.github.talelin.autoconfigure.exception.NotFoundException;
 import io.github.talelin.core.annotation.GroupRequired;
 import io.github.talelin.core.annotation.PermissionMeta;
+import io.github.talelin.latticy.common.enumeration.CodeMessage;
+import io.github.talelin.latticy.common.util.ResultUtil;
 import io.github.talelin.latticy.dto.book.CreateOrUpdateBookDTO;
 import io.github.talelin.latticy.model.BookDO;
 import io.github.talelin.latticy.service.BookService;
 import io.github.talelin.latticy.vo.CreatedVO;
 import io.github.talelin.latticy.vo.DeletedVO;
+import io.github.talelin.latticy.vo.ResultVo;
 import io.github.talelin.latticy.vo.UpdatedVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.Positive;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -59,10 +63,14 @@ public class BookController {
     }
 
 
-    @PostMapping("")
-    public CreatedVO createBook(@RequestBody @Validated CreateOrUpdateBookDTO validator) {
-        bookService.createBook(validator);
-        return new CreatedVO(12);
+    @PostMapping("test")
+    public ResultVo createBook() {
+        ResultVo ResultVo = ResultUtil.getSuccessVo(CodeMessage.CORE_INDEX_IMPORT_SUCCESS.getCode(),
+                CodeMessage.CORE_INDEX_IMPORT_SUCCESS.getMessage());
+        List list = new ArrayList<>();
+        ResultVo.setDataList(list);
+        ResultVo.setTotalNum(10);
+        return ResultVo;
     }
 
 

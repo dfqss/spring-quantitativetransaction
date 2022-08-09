@@ -9,7 +9,7 @@ spring:
   # 数据源配置，请修改为你项目的实际配置
   datasource:
     username: "root"
-    password: "root"
+    password: "123456"
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/lin_cmsflask?useSSL=false&serverTimezone=UTC&characterEncoding=UTF8
     #initialization-mode: always
@@ -33,22 +33,22 @@ logging:
   level:
     # web信息日志记录
     web: debug
-    # SQL日志记录
-    io.github.talelin.latticy.mapper: debug
+    # SQL日志记录 debug
+    io.github.talelin.latticy.mapper: error
 
 
-batchfilespath:
-  filespaths:
-    - C:/Users/29686/Desktop/service/coreIndex
-    - C:/Users/29686/Desktop/service/finAnalysisIndex
-    - C:/Users/29686/Desktop/service/growthIndex
-    - C:/Users/29686/Desktop/service/dupontAnalysisIndex
-    - C:/Users/29686/Desktop/service/stockValue
-    - C:/Users/29686/Desktop/service/tecAnalysisIndex
-    - C:/Users/29686/Desktop/service/industryClass
-    - C:/Users/29686/Desktop/service/secBasicIndex
-    - C:/Users/29686/Desktop/service/listingDate
-  filetypes:
+file-config:
+  batchFilesPath:
+    - C:/Users/thinkpad/Desktop/servers/coreIndex
+    - C:/Users/thinkpad/Desktop/servers/finAnalysisIndex
+    - C:/Users/thinkpad/Desktop/servers/growthIndex
+    - C:/Users/thinkpad/Desktop/servers/dupontAnalysisIndex
+    - C:/Users/thinkpad/Desktop/servers/stockValue
+    - C:/Users/thinkpad/Desktop/servers/tecAnalysisIndex
+    - C:/Users/thinkpad/Desktop/servers/industryClass
+    - C:/Users/thinkpad/Desktop/servers/secBasicIndex
+    - C:/Users/thinkpad/Desktop/servers/listingDate
+  fileTypes:
     - CWFXZB
     - CZZB
     - DBFXZB
@@ -56,16 +56,16 @@ batchfilespath:
     - JSFXZB
     - HYFL
     - ZQJCZB
-  uploadfilesmap:
-    HXZB: 'C:\Users\29686\Desktop\service\coreIndex'
-    CWFXZB: 'C:\Users\29686\Desktop\service\finAnalysisIndex'
-    CZZB: 'C:\Users\29686\Desktop\service\growthIndex'
-    DBFXZB: 'C:\Users\29686\Desktop\service\dupontAnalysisIndex'
-    GPGZ: 'C:\Users\29686\Desktop\service\stockValue'
-    JSFXZB: 'C:\Users\29686\Desktop\service\tecAnalysisIndex'
-    HYFL: 'C:\Users\29686\Desktop\service\industryClass'
-    ZQJCZB: 'C:\Users\29686\Desktop\service\secBasicIndex'
-    REC8: 'C:\Users\29686\Desktop\service\coreIndex'
-    SSRQ: 'C:\Users\29686\Desktop\service\listingDate'
+  uploadFilesMap:
+    HXZB: 'C:\Users\thinkpad\Desktop\servers\coreIndex'
+    CWFXZB: 'C:\Users\thinkpad\Desktop\servers\finAnalysisIndex'
+    CZZB: 'C:\Users\thinkpad\Desktop\servers\growthIndex'
+    DBFXZB: 'C:\Users\thinkpad\Desktop\servers\dupontAnalysisIndex'
+    GPGZ: 'C:\Users\thinkpad\Desktop\servers\stockValue'
+    JSFXZB: 'C:\Users\thinkpad\Desktop\servers\tecAnalysisIndex'
+    HYFL: 'C:\Users\thinkpad\Desktop\servers\industryClass'
+    ZQJCZB: 'C:\Users\thinkpad\Desktop\servers\secBasicIndex'
+    REC8: 'C:\Users\thinkpad\Desktop\servers\coreIndex'
+    SSRQ: 'C:\Users\thinkpad\Desktop\servers\listingDate'
 
 

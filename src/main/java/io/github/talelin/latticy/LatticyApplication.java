@@ -3,6 +3,7 @@ package io.github.talelin.latticy;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @MapperScan(basePackages = {"io.github.talelin.latticy.mapper"})
+//@ComponentScan(basePackages = {"io.github.talelin.autoconfigure.interceptor.AuthorizeInterceptor", "io.github.talelin.latticy.module.counter.CounterFactory"})
+//@ComponentScan("io.github.talelin.latticy.module.counter.CounterFactory")
 @SpringBootApplication(scanBasePackages = {"io.github.talelin.latticy"})
 public class LatticyApplication {
 
