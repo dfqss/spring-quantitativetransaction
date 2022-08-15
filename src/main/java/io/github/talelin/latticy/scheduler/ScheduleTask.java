@@ -1,10 +1,7 @@
 package io.github.talelin.latticy.scheduler;
 
 
-import io.github.talelin.latticy.scheduler.tasking.BatchFiles;
-import io.github.talelin.latticy.scheduler.tasking.CoreIndex;
-import io.github.talelin.latticy.scheduler.tasking.ListingIndex;
-import io.github.talelin.latticy.scheduler.tasking.OtherIndex;
+import io.github.talelin.latticy.scheduler.tasking.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
@@ -28,6 +25,9 @@ public class ScheduleTask  {
 
     @Autowired
     private ListingIndex listingIndex;
+
+    @Autowired
+    private CoreIndexBack coreIndexBack;
 
 //    @Async
 //    @Scheduled(cron = "0/10 * * * * ?")
@@ -60,4 +60,14 @@ public class ScheduleTask  {
 //    public void importListingData() {
 //        listingIndex.createOrUpdateListingDateCal();
 //    }
+
+    @Async
+    @Scheduled(cron = "0/300 * * * * ?")
+    public void importCoreIndexBack() {
+        try {
+            coreIndexBack.createOrUpdateCoreIndexBack();
+        }catch (Exception e) {
+
+        }
+    }
 }
