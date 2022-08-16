@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.github.talelin.latticy.mapper.FinAnalysisIndexBackMapper">
+
+    <insert id="saveOrUpdateBatch">
+        insert into mba_fin_analysis_index_back (
+        is_deleted,code,code_name,periods,roe_avg,
+        update_time,create_time)
+        VALUES
+        <foreach collection="batchList" item="FinAnalysisIndexBackDO" open="" close="" separator=",">
+            (0, #{FinAnalysisIndexBackDO.code}, #{FinAnalysisIndexBackDO.codeName}, #{FinAnalysisIndexBackDO.periods}, #{FinAnalysisIndexBackDO.roeAvg},
+            now(), now())
+        </foreach>
+        on duplicate key update
+        is_deleted = 0,code=values(code),code_name=values(code_name),periods=values(periods),
+        roe_avg=values(roe_avg),update_time=now()
+    </insert>
+
+</mapper>

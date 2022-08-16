@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.github.talelin.latticy.mapper.RangeRiseCommonMapper">
+
+    <insert id="saveOrUpdateBatch">
+        insert into mba_range_rise_common (
+        is_deleted,code,periods,quarter_rise,half_year_rise,
+        update_time,create_time)
+        VALUES
+        <foreach collection="batchList" item="RangeRiseRareDO" open="" close="" separator=",">
+            (0, #{RangeRiseRareDO.code}, #{RangeRiseRareDO.periods}, #{RangeRiseRareDO.quarterRise},
+            #{RangeRiseRareDO.halfYearRise},now(), now())
+        </foreach>
+        on duplicate key update
+        is_deleted = 0,code=values(code),periods=values(periods),
+        quarter_rise=values(quarter_rise), half_year_rise=values(half_year_rise),update_time=now()
+    </insert>
+
+</mapper>

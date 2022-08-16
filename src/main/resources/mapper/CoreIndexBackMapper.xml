@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.github.talelin.latticy.mapper.CoreIndexBackMapper">
+
+    <insert id="saveOrUpdateBatch">
+        insert into mba_core_index_back (
+        is_deleted,code,code_name,current_core,period_core,
+        final_cal_core,periods,status,show_times,cal_date,
+        report_date,update_time,create_time)
+        VALUES
+        <foreach collection="batchList" item="coreIndexBackDO" open="" close="" separator=",">
+            (0, #{coreIndexBackDO.code}, #{coreIndexBackDO.codeName}, #{coreIndexBackDO.currentCore}, #{coreIndexBackDO.periodCore},
+            #{coreIndexBackDO.finalCalCore}, #{coreIndexBackDO.periods}, #{coreIndexBackDO.status},
+            #{coreIndexBackDO.showTimes}, #{coreIndexBackDO.calDate}, #{coreIndexBackDO.reportDate}, now(), now())
+        </foreach>
+        on duplicate key update
+        is_deleted = 0,code=values(code),code_name=values(code_name),current_core=values(current_core),
+        period_core=values(period_core),final_cal_core=values(final_cal_core),periods=values(periods),
+        status=values(status),show_times=values(show_times),cal_date=values(cal_date),
+        report_date=values(report_date),update_time=now()
+    </insert>
+
+    <select id="selectList" parameterType="int" resultType="io.github.talelin.latticy.model.CoreIndexBackDO">
+        select * from mba_core_index_back where periods = #{periods}
+    </select>
+
+
+</mapper>

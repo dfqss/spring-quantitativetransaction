@@ -29,6 +29,11 @@ public class ScheduleTask  {
     @Autowired
     private CoreIndexBack coreIndexBack;
 
+    @Autowired
+    private FinAnalysisIndexBack finAnalysisIndexBack;
+
+    @Autowired RangeRiseCommon rangeRiseCommon;
+
 //    @Async
 //    @Scheduled(cron = "0/10 * * * * ?")
 //    public void readCoreIndexExcel() {
@@ -45,15 +50,15 @@ public class ScheduleTask  {
 //        }
 //    }
 
-    @Async
-    @Scheduled(cron = "0/6000 * * * * ?")
-    public void importOtherIndexData() {
-        try {
-            otherIndex.createOrUpdateOtherIndex();
-        }catch (Exception e) {
-
-        }
-    }
+//    @Async
+//    @Scheduled(cron = "0/6000 * * * * ?")
+//    public void importOtherIndexData() {
+//        try {
+//            otherIndex.createOrUpdateOtherIndex();
+//        }catch (Exception e) {
+//
+//        }
+//    }
 
 //    @Async
 //    @Scheduled(cron = "0/2000 * * * * ?")
@@ -61,13 +66,33 @@ public class ScheduleTask  {
 //        listingIndex.createOrUpdateListingDateCal();
 //    }
 
-    @Async
-    @Scheduled(cron = "0/300 * * * * ?")
-    public void importCoreIndexBack() {
-        try {
-            coreIndexBack.createOrUpdateCoreIndexBack();
-        }catch (Exception e) {
+//    @Async
+//    @Scheduled(cron = "0/20 * * * * ?")
+//    public void importCoreIndexBack() throws Exception {
+//        try {
+//            coreIndexBack.createOrUpdateCoreIndexBack();
+//        }catch (Exception e) {
+//            throw e;
+//        }
+//    }
 
+//    @Async
+//    @Scheduled(cron = "0/15 * * * * ?")
+//    public void createOrUpdateFinAnalysisIndexBack() throws Exception {
+//        try {
+//            finAnalysisIndexBack.createOrUpdateFinAnalysisIndexBack();
+//        }catch (Exception e) {
+//            throw e;
+//        }
+//    }
+
+    @Async
+    @Scheduled(cron = "0/15 * * * * ?")
+    public void createOrUpdateRangeRiseCommon() throws Exception {
+        try {
+            rangeRiseCommon.createOrUpdateRangeRiseCommon();
+        }catch (Exception e) {
+            throw e;
         }
     }
 }
