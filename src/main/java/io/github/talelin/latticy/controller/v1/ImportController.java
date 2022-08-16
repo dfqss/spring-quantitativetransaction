@@ -2,14 +2,17 @@ package io.github.talelin.latticy.controller.v1;
 
 import io.github.talelin.latticy.service.BatchFilesService;
 import io.github.talelin.latticy.service.CoreIndexService;
+import io.github.talelin.latticy.service.OtherIndexService;
 import io.github.talelin.latticy.vo.ResultVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/v1/importData")
+@RequestMapping("/quaTraV1/importData")
 @Validated
 @Slf4j
 public class ImportController {
@@ -19,6 +22,9 @@ public class ImportController {
 
     @Autowired
     private CoreIndexService coreIndexService ;
+
+    @Autowired
+    private OtherIndexService otherIndexService ;
 
     /**
      * 批量文件入库
@@ -38,5 +44,15 @@ public class ImportController {
     public ResultVo importCoreIndexData() {
         log.info("start service importCoreIndexData from api");
         return coreIndexService.createOrUpdateCoreIndex();
+    }
+
+    /**
+     * 读取其他指标数据
+     * @return
+     */
+    @PostMapping("importOtherIndexData")
+    public ResultVo importOtherIndexData() {
+        log.info("start service importOtherIndexData from api");
+        return otherIndexService.createOrUpdateOtherIndex();
     }
 }

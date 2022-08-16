@@ -2,15 +2,15 @@
 
 server:
   # 服务端口
-  port: 5000
+  port: 8997
 
 spring:
   # 数据源配置，请修改为你项目的实际配置
   datasource:
-    username: "root"
-    password: "123456"
+    username: "mba"
+    password: "!IDy_7)ZA-U3"
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/lin-cms?useSSL=false&serverTimezone=UTC&characterEncoding=UTF8
+    url: jdbc:mysql://localhost:3306/lin_cmsflask?useSSL=false&serverTimezone=UTC&characterEncoding=UTF8
 
 # 开启权限拦截
 auth:
@@ -22,8 +22,42 @@ login-captcha:
   secret: "m49CPM5ak@MDXTzbbT_ZEyMM3KBsBn!h"
 
 # 开启请求日志记录
-request-log:
-  enabled: true
+logging:
+  level:
+    # web信息日志记录
+    web: debug
+    # SQL日志记录 debug
+    io.github.talelin.latticy.mapper: error
 
+file-config:
+  batchFilesPath:
+    - /home/mba/share/coreIndex
+    - /home/mba/share/finAnalysisIndex
+    - /home/mba/share/growthIndex
+    - /home/mba/share/dupontAnalysisIndex
+    - /home/mba/share/stockValue
+    - /home/mba/share/tecAnalysisIndex
+    - /home/mba/share/industryClass
+    - /home/mba/share/secBasicIndex
+    - /home/mba/share/listingDate
+  fileTypes:
+    - CWFXZB
+    - CZZB
+    - DBFXZB
+    - GPGZ
+    - JSFXZB
+    - HYFL
+    - ZQJCZB
+  uploadFilesMap:
+    HXZB: '/home/mba/share/coreIndex'
+    CWFXZB: '/home/mba/share/finAnalysisIndex'
+    CZZB: '/home/mba/share/growthIndex'
+    DBFXZB: '/home/mba/share/dupontAnalysisIndex'
+    GPGZ: '/home/mba/share/stockValue'
+    JSFXZB: '/home/mba/share/tecAnalysisIndex'
+    HYFL: '/home/mba/share/industryClass'
+    ZQJCZB: '/home/mba/share/secBasicIndex'
+    REC8: '/home/mba/share/coreIndex'
+    SSRQ: '/home/mba/share/listingDate'
 
 
