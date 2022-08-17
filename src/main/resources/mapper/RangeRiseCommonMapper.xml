@@ -4,15 +4,15 @@
 
     <insert id="saveOrUpdateBatch">
         insert into mba_range_rise_common (
-        is_deleted,code,periods,quarter_rise,half_year_rise,
+        is_deleted,code,code_name,periods,quarter_rise,half_year_rise,
         update_time,create_time)
         VALUES
         <foreach collection="batchList" item="RangeRiseRareDO" open="" close="" separator=",">
-            (0, #{RangeRiseRareDO.code}, #{RangeRiseRareDO.periods}, #{RangeRiseRareDO.quarterRise},
+            (0, #{RangeRiseRareDO.code},#{RangeRiseRareDO.codeName}, #{RangeRiseRareDO.periods}, #{RangeRiseRareDO.quarterRise},
             #{RangeRiseRareDO.halfYearRise},now(), now())
         </foreach>
         on duplicate key update
-        is_deleted = 0,code=values(code),periods=values(periods),
+        is_deleted = 0,code=values(code),code_name=values(code_name),periods=values(periods),
         quarter_rise=values(quarter_rise), half_year_rise=values(half_year_rise),update_time=now()
     </insert>
 

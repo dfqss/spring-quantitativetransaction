@@ -78,7 +78,6 @@ public class CoreIndexBack {
         try {
             List<Object> excelDataList = ExcelUtil.
                     readExcel(file, 0, 2, methods, CoreIndexBackDO.class);
-            //4.计算封装回测核心指标文件
             //4.1查询上一期的数据
             if (FILE_PERIODS != 0) {
                 coreIndexBackDOList = coreIndexBackMapper.selectList(FILE_PERIODS - 1);

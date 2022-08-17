@@ -14,6 +14,9 @@ public class RangeRiseCommonDO extends MbaModel implements Serializable {
     // 股票编码
     private String code;
 
+    // 股票名称
+    private String codeName;
+
     // 期数
     private Integer periods;
 
