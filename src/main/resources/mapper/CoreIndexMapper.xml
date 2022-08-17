@@ -5,10 +5,10 @@
     <insert id="backupCoreIndex">
         insert into mba_core_index_hist (
         code,code_name,current_core,period_core,final_cal_core,
-        periods,status,show_times,cal_date,create_time,
+        periods,status,show_times,cal_date,report_date,create_time,
         update_time,delete_time,is_deleted)
         select code,code_name,current_core,period_core,final_cal_core,
-        periods,status,show_times,cal_date,create_time,
+        periods,status,show_times,cal_date,report_date,create_time,
         update_time,delete_time,is_deleted
         from mba_core_index
     </insert>
