@@ -133,8 +133,8 @@ public class RangeRiseCommon {
             quarterRangeRiseCommonDO.setUpdateTime(new Date());
             quarterRangeRiseCommonDO.setCreateTime(new Date());
 
-            for (Object o : halfYearExcelDate) {
-                RangeRiseCommonDO halfYearRangeRiseCommonDO = (RangeRiseCommonDO) excelDate;
+            for (Object halfYearDate : halfYearExcelDate) {
+                RangeRiseCommonDO halfYearRangeRiseCommonDO = (RangeRiseCommonDO) halfYearDate;
                 if (halfYearRangeRiseCommonDO.getCode().equals(quarterRangeRiseCommonDO.getCode())){
                     quarterRangeRiseCommonDO.setHalfYearRise(halfYearRangeRiseCommonDO.getHalfYearRise());
                 }
