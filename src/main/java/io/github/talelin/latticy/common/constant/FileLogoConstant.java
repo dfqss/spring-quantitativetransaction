@@ -43,6 +43,10 @@ public class FileLogoConstant {
 
     public static final String HXZB = "HXZB"; // 核心指标：HXZB
 
+    public static final String HC_HXZB = "HC_HXZB"; //回测核心指标
+
+    public static final String HC_JZCSYL = "HC_JZCSYL"; //回测财务指标：HC_JZCSYL
+
     /**
      * 文件读取状态 0-未读 1-读取失败 2-读取成功
      */
@@ -117,6 +121,10 @@ public class FileLogoConstant {
 
     public static final String MBA_SEC_BASIC_INDEX = "mba_sec_basic_index";
 
+    public static final String MBA_FIN_ANALYSIS_INDEX_BACK = "mba_fin_analysis_index_back";
+
+    public static final String MBA_RANGE_RISE_COMMON = "mba_range_rise_common";
+
     /**
      * 投资指标的所有set方法（按excel的读取顺序排序）
      */
@@ -156,5 +164,9 @@ public class FileLogoConstant {
     public static String[] SEC_BASIC_INDEX_ARR = { // 证券基础指标
             "setCode", "setCodeName", "setTotalShares", "setFreeFloatShares", "setShareIssuingMkt",
             "setRtMktCap", "setRtFloatMktCap"
+    };
+
+    public static String[] FIN_ANALYSIS_INDEX_BACK_ARR = { // 回测财务分析指标
+            "setCode", "setCodeName", "setRoeAvg"
     };
 }
