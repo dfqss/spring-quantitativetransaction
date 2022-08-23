@@ -36,7 +36,7 @@ public class ScheduleTask  {
     private ListingIndex listingIndex;
 
     @Async
-    @Scheduled(cron = "0/60 * * * * ?")
+    @Scheduled(cron = "0/10 * * * * ?")
     public void readCoreIndexExcel() {
         batchFiles.readFile();
     }
@@ -46,27 +46,30 @@ public class ScheduleTask  {
 
     @Autowired RangeRiseCommon rangeRiseCommon;
 
-
-    @Async
-    @Scheduled(cron = "0/90 * * * * ?")
-    public void importCoreIndexData() {
-        try {
-            coreIndex.createOrUpdateCoreIndex();
-        }catch (Exception e) {
-
-        }
-    }
+    @Autowired
+    private CoreIndexBack coreIndexBack;
 
 
-    @Async
-    @Scheduled(cron = "0/80 * * * * ?")
-    public void importOtherIndexData() {
-        try {
-            otherIndex.createOrUpdateOtherIndex();
-        }catch (Exception e) {
-
-        }
-    }
+//    @Async
+//    @Scheduled(cron = "0/90 * * * * ?")
+//    public void importCoreIndexData() {
+//        try {
+//            coreIndex.createOrUpdateCoreIndex();
+//        }catch (Exception e) {
+//
+//        }
+//    }
+//
+//
+//    @Async
+//    @Scheduled(cron = "0/80 * * * * ?")
+//    public void importOtherIndexData() {
+//        try {
+//            otherIndex.createOrUpdateOtherIndex();
+//        }catch (Exception e) {
+//
+//        }
+//    }
 
 //    @Async
 //    @Scheduled(cron = "0/2000 * * * * ?")
@@ -94,13 +97,13 @@ public class ScheduleTask  {
 //        }
 //    }
 
-    @Async
-    @Scheduled(cron = "0/15 * * * * ?")
-    public void createOrUpdateRangeRiseCommon() throws Exception {
-        try {
-            rangeRiseCommon.createOrUpdateRangeRiseCommon();
-        }catch (Exception e) {
-            throw e;
-        }
-    }
+//    @Async
+//    @Scheduled(cron = "0/15 * * * * ?")
+//    public void createOrUpdateRangeRiseCommon() throws Exception {
+//        try {
+//            rangeRiseCommon.createOrUpdateRangeRiseCommon();
+//        }catch (Exception e) {
+//            throw e;
+//        }
+//    }
 }

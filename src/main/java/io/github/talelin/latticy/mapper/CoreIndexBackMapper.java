@@ -16,4 +16,5 @@ public interface CoreIndexBackMapper extends BaseMapper<CoreIndexBackDO> {
 
     List<CoreIndexBackDO> selectList(@Param("periods") int periods);
 
+//    void getBackTestList(GetBackTestVO backTestVO);
 }
