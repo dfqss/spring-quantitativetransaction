@@ -19,7 +19,7 @@
         insert into mba_batch_files(is_deleted, file_name, file_path, file_periods,
         status, cal_date, create_time, update_time)
         select '0', #{fileName}, #{filePath}, IFNULL( MAX( file_periods ), 0 )+1,
-        '0', DATE_FORMAT(now(),'%Y-%m-%d'), now(), now() from mba_batch_files where file_name like #{type}
+        '0', DATE_FORMAT(now(),'%Y-%m-%d'), now(), now() from mba_batch_files where file_name like concat(#{type},'%')
     </insert>
 
     <update id="updateBatchFilesStatus">

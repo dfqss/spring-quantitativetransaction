@@ -35,17 +35,16 @@ public class ScheduleTask  {
     @Autowired
     private ListingIndex listingIndex;
 
-    @Async
-    @Scheduled(cron = "0/60 * * * * ?")
-    public void readCoreIndexExcel() {
-        batchFiles.readFile();
-    }
-
     @Autowired
     private FinAnalysisIndexBack finAnalysisIndexBack;
 
     @Autowired RangeRiseCommon rangeRiseCommon;
 
+    @Async
+    @Scheduled(cron = "0/60 * * * * ?")
+    public void readCoreIndexExcel() {
+        batchFiles.readFile();
+    }
 
     @Async
     @Scheduled(cron = "0/90 * * * * ?")
@@ -94,13 +93,13 @@ public class ScheduleTask  {
 //        }
 //    }
 
-    @Async
-    @Scheduled(cron = "0/15 * * * * ?")
-    public void createOrUpdateRangeRiseCommon() throws Exception {
-        try {
-            rangeRiseCommon.createOrUpdateRangeRiseCommon();
-        }catch (Exception e) {
-            throw e;
-        }
-    }
+//    @Async
+//    @Scheduled(cron = "0/15 * * * * ?")
+//    public void createOrUpdateRangeRiseCommon() throws Exception {
+//        try {
+//            rangeRiseCommon.createOrUpdateRangeRiseCommon();
+//        }catch (Exception e) {
+//            throw e;
+//        }
+//    }
 }

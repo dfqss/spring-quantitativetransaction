@@ -259,7 +259,7 @@ public class CoreIndex extends ServiceImpl<CoreIndexMapper, CoreIndexDO> {
     private Map<String, String> setStrategyContainer(String strategyId, String strategyType) {
         if(!strategyContainer.containsKey(strategyType)) {
             Map<String, Object> params = new HashMap<>();
-            params.put("strategyId", strategyId);
+            params.put("strategy_id", strategyId);
             List<TradingStrategyDO> tradingStrategyList = tradingStrategyMapper.selectByMap(params);
             Map<String, String> tradingStrategyMap = tradingStrategyList.stream().
                     collect(Collectors.toMap(TradingStrategyDO::getCode, TradingStrategyDO::getStrategy));
