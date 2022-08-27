@@ -137,6 +137,34 @@
                 share_issuing_mkt=values(share_issuing_mkt),free_float_shares=values(free_float_shares),
                 update_time=now()
             </when>
+            <when test="entity.entityName=='mba_fin_analysis_index_back'">
+                insert into mba_fin_analysis_index_back (
+                is_deleted,code,code_name,periods,roe_avg,
+                update_time,create_time)
+                VALUES
+                <foreach collection="batchList" item="FinAnalysisIndexBackDO" open="" close="" separator=",">
+                    (0, #{FinAnalysisIndexBackDO.code}, #{FinAnalysisIndexBackDO.codeName},
+                    #{FinAnalysisIndexBackDO.periods}, #{FinAnalysisIndexBackDO.roeAvg},
+                    now(), now())
+                </foreach>
+                on duplicate key update
+                is_deleted = 0,code=values(code),code_name=values(code_name),periods=values(periods),
+                roe_avg=values(roe_avg),update_time=now()
+            </when>
+            <when test="entity.entityName=='mba_range_rise_common'">
+                insert into mba_range_rise_common (
+                is_deleted,code,code_name,periods,quarter_rise,half_year_rise,
+                update_time,create_time)
+                VALUES
+                <foreach collection="batchList" item="RangeRiseRareDO" open="" close="" separator=",">
+                    (0, #{RangeRiseRareDO.code},#{RangeRiseRareDO.codeName}, #{RangeRiseRareDO.periods},
+                    #{RangeRiseRareDO.quarterRise},
+                    #{RangeRiseRareDO.halfYearRise},now(), now())
+                </foreach>
+                on duplicate key update
+                is_deleted = 0,code=values(code),code_name=values(code_name),periods=values(periods),
+                quarter_rise=values(quarter_rise), half_year_rise=values(half_year_rise),update_time=now()
+            </when>
         </choose>
     </insert>
 </mapper>

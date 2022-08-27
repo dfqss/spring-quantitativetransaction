@@ -37,8 +37,12 @@ public class ScheduleTask  {
 
     @Autowired
     private FinAnalysisIndexBack finAnalysisIndexBack;
+	
+	@Autowired
+    private CoreIndexBack coreIndexBack;
 
-    @Autowired RangeRiseCommon rangeRiseCommon;
+	@Autowired
+    private RangeRiseCommon rangeRiseCommon;
 
     @Async
     @Scheduled(cron = "0/60 * * * * ?")
@@ -46,26 +50,26 @@ public class ScheduleTask  {
         batchFiles.readFile();
     }
 
-    @Async
-    @Scheduled(cron = "0/90 * * * * ?")
-    public void importCoreIndexData() {
-        try {
-            coreIndex.createOrUpdateCoreIndex();
-        }catch (Exception e) {
-
-        }
-    }
-
-
-    @Async
-    @Scheduled(cron = "0/80 * * * * ?")
-    public void importOtherIndexData() {
-        try {
-            otherIndex.createOrUpdateOtherIndex();
-        }catch (Exception e) {
-
-        }
-    }
+//    @Async
+//    @Scheduled(cron = "0/90 * * * * ?")
+//    public void importCoreIndexData() {
+//        try {
+//            coreIndex.createOrUpdateCoreIndex();
+//        }catch (Exception e) {
+//
+//        }
+//    }
+//
+//
+//    @Async
+//    @Scheduled(cron = "0/80 * * * * ?")
+//    public void importOtherIndexData() {
+//        try {
+//            otherIndex.createOrUpdateOtherIndex();
+//        }catch (Exception e) {
+//
+//        }
+//    }
 
 //    @Async
 //    @Scheduled(cron = "0/2000 * * * * ?")

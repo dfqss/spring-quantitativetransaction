@@ -36,9 +36,9 @@ public class CoreIndexBackDO extends MbaModel implements Serializable {
     // 展示次数
     private Integer showTimes;
 
-    // 获取日期
+    // 获取日期（年月日）
     private Date calDate;
 
-    // 报告日期
+    // 报告日期（年月日）
     private Date reportDate;
 }

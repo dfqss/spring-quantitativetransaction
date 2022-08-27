@@ -2,18 +2,23 @@ package io.github.talelin.latticy.scheduler.tasking;
 
 import io.github.talelin.latticy.common.constant.FileLogoConstant;
 import io.github.talelin.latticy.common.util.ExcelUtil;
+import io.github.talelin.latticy.mapper.BatchFilesMapper;
 import io.github.talelin.latticy.mapper.CoreIndexBackMapper;
 import io.github.talelin.latticy.mapper.TradingStrategyMapper;
+import io.github.talelin.latticy.model.BatchFilesDO;
 import io.github.talelin.latticy.model.CoreIndexBackDO;
 import io.github.talelin.latticy.model.TradingStrategyDO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,15 +33,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CoreIndexBack {
 
-    /**
-     * 回测文件路径目录
-     */
-    private static final String BACK_FILE_PATH = "C:\\Users\\29686\\Desktop\\股票回测\\core\\";
+    @Autowired
+    private BatchFilesMapper batchFilesMapper ;
 
-    /**
-     * 文件期数
-     */
-    private static int FILE_PERIODS = 49;
+    @Autowired
+    private BatchFiles batchFiles ;
 
     private static String[] methods = {"setCode", "setCodeName", "setCurrentCore"};
 
@@ -54,51 +55,68 @@ public class CoreIndexBack {
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public void createOrUpdateCoreIndexBack() throws Exception {
-        //1.获取文件名称，读取excel数据
-        String fileAbsolutePath = BACK_FILE_PATH + "HC_HXZB_" + FILE_PERIODS + ".xlsx";
-        File file = new File(fileAbsolutePath);
-        //2.判断文件是否存在,是否是excel文件
-        if (file.exists()) {
-            String fileName = file.getName();
-            String extension = fileName.substring(fileName.lastIndexOf("."));
-            if (!(".xlsx".equals(extension) || ".xls".equals(extension))) {
-                log.info(fileName + "文件不是excel文件");
-                return;
-            }
-        } else {
-            log.info("核心指标第" + FILE_PERIODS + "期文件不存在");
+
+        //0.获取要读取文件的信息
+        BatchFilesDO batchFilesDO = getBatchFile();
+        if(null == batchFilesDO) {
+            log.info("没有需要计算的回测核心指标数据文件");
             return;
         }
+
         // 3获取文件路径、文件名称和文件期数
-        String filePath = file.getAbsolutePath();
-        String fileName = file.getName();
-        log.info("------start 开始计算核心指数第" + FILE_PERIODS + "期: " + fileName);
+        String filePath = batchFilesDO.getFilePath();
+        String fileName = batchFilesDO.getFileName();
+        Integer filePeriods = batchFilesDO.getFilePeriods();
+        String fullName = filePath + File.separator + fileName;
+        String reportDate = fileName.split("_")[1];
+        // 将数据更新为：毫秒值-[读取中]
+        batchFiles.updateBatchFilesStatus(fileName,
+                String.valueOf(System.currentTimeMillis()), FileLogoConstant.READING);
+
+        log.info("------start 开始计算核心指数第" + filePeriods + "期: " + fileName);
+
         List<CoreIndexBackDO> coreIndexBackDOList = null;
         //4.读取excel中核心指标数据
         try {
             List<Object> excelDataList = ExcelUtil.
-                    readExcel(file, 0, 2, methods, CoreIndexBackDO.class);
+                    readExcel(new File(fullName), 0, 2, methods, CoreIndexBackDO.class);
             //4.1查询上一期的数据
-            if (FILE_PERIODS != 0) {
-                coreIndexBackDOList = coreIndexBackMapper.selectList(FILE_PERIODS - 1);
+            if (filePeriods != 0) {
+                coreIndexBackDOList = coreIndexBackMapper.selectList(filePeriods - 1);
             } else {
                 coreIndexBackDOList = new ArrayList<>();
             }
             // 4.2根据执行策略组装或新增数据，并将数据入库
             log.info("根据执行策略组装或新增数据，并将数据入库");
             List<CoreIndexBackDO> indexBackDOList = assembleData(coreIndexBackDOList, excelDataList);
-            assembleUpdateDate(FILE_PERIODS, indexBackDOList);
+            assembleUpdateDate(filePeriods,reportDate, indexBackDOList);
             log.info("组装数据完成");
             coreIndexBackMapper.saveOrUpdateBatch(indexBackDOList);
-            log.info("持久化完成");
+
+            batchFiles.updateBatchFilesStatus(fileName, FileLogoConstant.STATUS_TWO, FileLogoConstant.SUCCESS);
+            log.info("end------计算核心指数完成: " + fileName);
         } catch (Exception e) {
+            log.error("读取核心指标文件失败: " + e);
+            // 更新数据读取状态为：1-失败
+            batchFiles.updateBatchFilesStatus(fileName, FileLogoConstant.STATUS_ONE, FileLogoConstant.ERROR);
             throw e;
-        } finally {
-            FILE_PERIODS++;
         }
     }
 
-    private void assembleUpdateDate(int filePeriods, List<CoreIndexBackDO> coreIndexBackDOS) {
+    /**
+     * 获取要读取文件的信息
+     * @return 文件对象
+     */
+    private BatchFilesDO getBatchFile() {
+        List<BatchFilesDO> batchFilesList = batchFilesMapper.
+                queryBatchFilesByFileType(FileLogoConstant.HC_HXZB, FileLogoConstant.STATUS_ZERO);
+        if(CollectionUtils.isEmpty(batchFilesList)) {
+            return null;
+        }
+        return batchFilesList.get(0);
+    }
+
+    private void assembleUpdateDate(int filePeriods,String reportDate, List<CoreIndexBackDO> coreIndexBackDOS) throws ParseException {
         for (CoreIndexBackDO coreIndexBackDO : coreIndexBackDOS) {
             coreIndexBackDO.setPeriods(filePeriods);
             if (coreIndexBackDO.getStatus() == null) coreIndexBackDO.setStatus("1");
@@ -106,6 +124,10 @@ public class CoreIndexBack {
             if (coreIndexBackDO.getFinalCalCore() == null) coreIndexBackDO.setFinalCalCore("0.00");
             if (coreIndexBackDO.getIsDeleted() == null) coreIndexBackDO.setIsDeleted(0);
             if (coreIndexBackDO.getShowTimes() == null) coreIndexBackDO.setShowTimes(0);
+            if (coreIndexBackDO.getReportDate() == null) coreIndexBackDO.setReportDate(new SimpleDateFormat("YYYYMMdd").parse(reportDate));
+//            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYYMMdd").parse(reportDate);
+//            Date date = simpleDateFormat.parse(reportDate);
+//            System.out.println(date);
         }
     }
 

@@ -1,9 +1,7 @@
 package io.github.talelin.latticy.scheduler.tasking;
 
 import io.github.talelin.latticy.common.util.ExcelUtil;
-import io.github.talelin.latticy.mapper.FinAnalysisIndexBackMapper;
 import io.github.talelin.latticy.mapper.RangeRiseCommonMapper;
-import io.github.talelin.latticy.model.FinAnalysisIndexBackDO;
 import io.github.talelin.latticy.model.RangeRiseCommonDO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
