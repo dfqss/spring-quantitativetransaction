@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CoreIndex extends ServiceImpl<CoreIndexMapper, CoreIndexDO> {
 
-    private static String[] methods = {"setCode","setCodeName","setCurrentCore"} ;
+    private static String[] methods = {"setCode","setCodeName","setCurrentCore"};
 
     private Map<String, Map<String, String>> strategyContainer = new HashMap<>() ;
 
@@ -138,13 +138,17 @@ public class CoreIndex extends ServiceImpl<CoreIndexMapper, CoreIndexDO> {
         // 如果表中存在当前股票数据，则更新数据，否则添加
         for(Object excelData : excelDataList) {
             String code = ((CoreIndexDO) excelData).getCode();
+            // excel中不存在，但表中存在的数据，更新展示状态：1-不展示
             if(coreIndexMap.containsKey(code)) {
                 modifyExcelData(coreIndexMap.get(code), ((CoreIndexDO) excelData));
+                ((CoreIndexDO) excelData).setUpdateTime(new Date());
             }else {
                 addExcelData(((CoreIndexDO) excelData));
             }
             returnList.add((CoreIndexDO) excelData);
         }
+        // 向集合中追加excel中不存在，但表中存在的数据
+        returnList.addAll(getExcelDataListNotInTable(getExcelCodeList(excelDataList), coreIndexMap));
         return returnList;
     }
 
@@ -156,7 +160,7 @@ public class CoreIndex extends ServiceImpl<CoreIndexMapper, CoreIndexDO> {
         excelData.setIsDeleted(0);
         excelData.setPeriodCore("0");
         excelData.setFinalCalCore("0.00");
-        excelData.setStatus("1");
+        excelData.setStatus(FileLogoConstant.SHOW_STATUS_ONE);
         excelData.setShowTimes(0);
         excelData.setCreateTime(new Date());
         excelData.setUpdateTime(new Date());
@@ -195,18 +199,17 @@ public class CoreIndex extends ServiceImpl<CoreIndexMapper, CoreIndexDO> {
                 // 计算：(current_core - period_core) / period_core 结果保留2为小数
                 BigDecimal finalCalCore = new BigDecimal(excelCurrentCore).
                         subtract(new BigDecimal(currentCore)).
-                        divide(new BigDecimal(currentCore), 2);
+                        divide(new BigDecimal(currentCore), 2, BigDecimal.ROUND_DOWN);
                 // 将计算结果赋值给final_cal_core
                 excelData.setFinalCalCore(String.valueOf(finalCalCore));
                 // 执行核心策略
                 exeCoreStrategy(coreIndexData, excelData);
                 // 执行连续减少策略
-                exeConRedStrategy(coreIndexData, excelData);
+//                exeConRedStrategy(coreIndexData, excelData);
             }else {
-                // 当excel上传的核心指标与上次的核心指标一样，则保留上次的展示结果
-                excelData = coreIndexData;
+                // 当excel上传的核心指标与上次的核心指标一样，将展示结果修改为：1-不展示
+                excelData.setStatus(FileLogoConstant.SHOW_STATUS_ONE);
             }
-            excelData.setUpdateTime(new Date());
         }
     }
 
@@ -221,8 +224,14 @@ public class CoreIndex extends ServiceImpl<CoreIndexMapper, CoreIndexDO> {
         // coreStrategy-核心策略集合
         Map<String, String> tradingStrategyMap =
                 setStrategyContainer(FileLogoConstant.S_100000, FileLogoConstant.S_CORE);
+        // 获取核心策略
+        String strategy = tradingStrategyMap.get(coreIndexData.getCode());
+        // 如果策略中没有配置该股票代码，则取当前策略的通用策略
+        if(!StringUtils.hasLength(strategy)) {
+            strategy = tradingStrategyMap.get(FileLogoConstant.COMMON_CODE);
+        }
         // 将计算结果小于 -0.1 的status状态修改成：0-展示  否则修改成：1-不展示
-        if(finalCalCore.compareTo(new BigDecimal(tradingStrategyMap.get(coreIndexData.getCode()))) <= 0) {
+        if(finalCalCore.compareTo(new BigDecimal(strategy)) <= 0) {
             excelData.setStatus(FileLogoConstant.SHOW_STATUS_ZERO);
         }else {
             excelData.setStatus(FileLogoConstant.SHOW_STATUS_ONE);
@@ -243,6 +252,10 @@ public class CoreIndex extends ServiceImpl<CoreIndexMapper, CoreIndexDO> {
         Map<String, String> tradingStrategyMap =
                 setStrategyContainer(FileLogoConstant.S_100001, FileLogoConstant.S_CONTINUE_REDUCTION);
         String strategy = tradingStrategyMap.get(coreIndexData.getCode());
+        // 如果策略中没有配置该股票代码，则取当前策略的通用策略
+        if(!StringUtils.hasLength(strategy)) {
+            strategy = tradingStrategyMap.get(FileLogoConstant.COMMON_CODE);
+        }
         // 当期和上期都小于或等于目标值的时候：0-展示  否则修改成：1-不展示
         if(lastCore.compareTo(new BigDecimal(strategy)) <= 0 && currentCore.compareTo(new BigDecimal(strategy)) <= 0) {
             excelData.setStatus(FileLogoConstant.SHOW_STATUS_ZERO);
@@ -304,6 +317,36 @@ public class CoreIndex extends ServiceImpl<CoreIndexMapper, CoreIndexDO> {
         baseMapper.updatePeriods(filePeriods);
     }
 
+    /**
+     * 判断excel中不存在，但表中存在的数据
+     * @param excelCodeList
+     * @param coreIndexMap
+     */
+    private List<CoreIndexDO> getExcelDataListNotInTable(List<String> excelCodeList, Map<String, CoreIndexDO> coreIndexMap) {
+        List<CoreIndexDO> returnList = new ArrayList<>();
+        for(String coreIndexCode : coreIndexMap.keySet()) {
+            if(!excelCodeList.contains(coreIndexCode)) {
+                CoreIndexDO coreIndexDO = coreIndexMap.get(coreIndexCode);
+                coreIndexDO.setStatus(FileLogoConstant.SHOW_STATUS_ONE);
+                coreIndexDO.setUpdateTime(new Date());
+                returnList.add(coreIndexDO);
+            }
+        }
+        return returnList;
+    }
+
+    /**
+     * 获取excelCodeList
+     * @param excelDataList
+     * @return
+     */
+    private List<String> getExcelCodeList(List<Object> excelDataList) {
+        List<String> excelCodeList = new ArrayList<>();
+        for(Object excelData : excelDataList) {
+            excelCodeList.add(((CoreIndexDO) excelData).getCode());
+        }
+        return excelCodeList;
+    }
 
 
 
@@ -312,6 +355,10 @@ public class CoreIndex extends ServiceImpl<CoreIndexMapper, CoreIndexDO> {
 
 
     public static void main(String[] args) {
+
+        String s = "HC_HXZB_20091231_0";
+        System.err.println(s.substring(8,16));
+
 //        TradingStrategyDO tradingStrategyDO1 = new TradingStrategyDO();
 //        tradingStrategyDO1.setStrategyId("1");
 //        tradingStrategyDO1.setCode("100");
@@ -327,12 +374,12 @@ public class CoreIndex extends ServiceImpl<CoreIndexMapper, CoreIndexDO> {
 //                collect(Collectors.toMap(TradingStrategyDO::getCode, a->a));
 //
 //        list.get(0).setCode("修改以后");
-        String fileName = "HXZB_20220710&20220711_632680";
-        int fileNameIndex = fileName.indexOf("&");
-
-
-        System.err.println(fileName.substring(fileNameIndex-8, fileNameIndex));
-        System.err.println(fileName.substring(fileNameIndex+1, fileNameIndex+9));
+//        String fileName = "HXZB_20220710&20220711_632680";
+//        int fileNameIndex = fileName.indexOf("&");
+//
+//
+//        System.err.println(fileName.substring(fileNameIndex-8, fileNameIndex));
+//        System.err.println(fileName.substring(fileNameIndex+1, fileNameIndex+9));
 
 
     }

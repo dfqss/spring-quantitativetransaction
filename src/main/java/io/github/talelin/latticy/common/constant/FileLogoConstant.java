@@ -86,6 +86,11 @@ public class FileLogoConstant {
     public static final String S_100001 = "100001"; // 连续减少策略
 
     /**
+     * 通用股票策略代码
+     */
+    public static final String COMMON_CODE = "0000"; // 通用策略代码
+
+    /**
      * 策略类型
      */
     public static final String S_CORE = "coreStrategy"; // 核心策略

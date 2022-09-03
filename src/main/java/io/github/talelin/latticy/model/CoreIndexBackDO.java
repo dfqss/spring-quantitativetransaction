@@ -1,5 +1,7 @@
 package io.github.talelin.latticy.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import lombok.Data;
@@ -10,9 +12,11 @@ import java.util.Date;
 @Data
 @TableName("mba_core_index_back")
 public class CoreIndexBackDO extends MbaModel implements Serializable {
-    private static final long serialVersionUID = -1871612564545346182L;
+
+    private static final long serialVersionUID = -2224304896652755356L;
 
     // 股票编码
+    @TableId(value = "code",type = IdType.INPUT)
     private String code;
 
     // 股票名称

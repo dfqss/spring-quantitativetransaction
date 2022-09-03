@@ -1,5 +1,7 @@
 package io.github.talelin.latticy.scheduler.tasking;
 
+import com.amdelamar.jhash.Hash;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.github.talelin.latticy.common.constant.FileLogoConstant;
 import io.github.talelin.latticy.common.util.ExcelUtil;
 import io.github.talelin.latticy.mapper.BatchFilesMapper;
@@ -17,8 +19,6 @@ import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  */
 @Component
 @Slf4j
-public class CoreIndexBack {
+public class CoreIndexBack extends ServiceImpl<CoreIndexBackMapper, CoreIndexBackDO> {
 
     @Autowired
     private BatchFilesMapper batchFilesMapper ;
@@ -49,50 +49,44 @@ public class CoreIndexBack {
     @Autowired
     private CoreIndexBackMapper coreIndexBackMapper;
 
-
     /**
      * 批量创建或更新回测核心指数表
      */
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public void createOrUpdateCoreIndexBack() throws Exception {
-
-        //0.获取要读取文件的信息
+        // 获取要读取文件的信息
         BatchFilesDO batchFilesDO = getBatchFile();
         if(null == batchFilesDO) {
             log.info("没有需要计算的回测核心指标数据文件");
             return;
         }
-
-        // 3获取文件路径、文件名称和文件期数
+        // 获取文件路径、文件名称和文件期数
         String filePath = batchFilesDO.getFilePath();
         String fileName = batchFilesDO.getFileName();
         Integer filePeriods = batchFilesDO.getFilePeriods();
-        String fullName = filePath + File.separator + fileName;
-        String reportDate = fileName.split("_")[1];
         // 将数据更新为：毫秒值-[读取中]
         batchFiles.updateBatchFilesStatus(fileName,
                 String.valueOf(System.currentTimeMillis()), FileLogoConstant.READING);
-
         log.info("------start 开始计算核心指数第" + filePeriods + "期: " + fileName);
-
-        List<CoreIndexBackDO> coreIndexBackDOList = null;
-        //4.读取excel中核心指标数据
+        String fullName = filePath + File.separator + fileName;
         try {
+            // 读取excel中核心指标数据
             List<Object> excelDataList = ExcelUtil.
                     readExcel(new File(fullName), 0, 2, methods, CoreIndexBackDO.class);
-            //4.1查询上一期的数据
-            if (filePeriods != 0) {
-                coreIndexBackDOList = coreIndexBackMapper.selectList(filePeriods - 1);
-            } else {
-                coreIndexBackDOList = new ArrayList<>();
-            }
-            // 4.2根据执行策略组装或新增数据，并将数据入库
-            log.info("根据执行策略组装或新增数据，并将数据入库");
-            List<CoreIndexBackDO> indexBackDOList = assembleData(coreIndexBackDOList, excelDataList);
-            assembleUpdateDate(filePeriods,reportDate, indexBackDOList);
-            log.info("组装数据完成");
-            coreIndexBackMapper.saveOrUpdateBatch(indexBackDOList);
-
+            // 查询上一期的数据
+            List<CoreIndexBackDO> coreIndexBackList = baseMapper.selectList(null);
+            if(null == coreIndexBackList) coreIndexBackList = new ArrayList<>();
+            // 将上一期的数据原封不动插入到历史表中
+            backupCoreIndex();
+            // 根据执行策略组装或新增数据，并将数据入库
+            this.saveOrUpdateBatch(assembleData(coreIndexBackList, excelDataList));
+            // 更新计算日期：更新为当前时间
+            updateCalDate(fileName);
+            // 更新展示次数
+            updateShowTimes();
+            // 更新期数
+            updatePeriods(filePeriods);
+            // 更新数据读取状态为：2-成功
             batchFiles.updateBatchFilesStatus(fileName, FileLogoConstant.STATUS_TWO, FileLogoConstant.SUCCESS);
             log.info("end------计算核心指数完成: " + fileName);
         } catch (Exception e) {
@@ -116,70 +110,51 @@ public class CoreIndexBack {
         return batchFilesList.get(0);
     }
 
-    private void assembleUpdateDate(int filePeriods,String reportDate, List<CoreIndexBackDO> coreIndexBackDOS) throws ParseException {
-        for (CoreIndexBackDO coreIndexBackDO : coreIndexBackDOS) {
-            coreIndexBackDO.setPeriods(filePeriods);
-            if (coreIndexBackDO.getStatus() == null) coreIndexBackDO.setStatus("1");
-            if (coreIndexBackDO.getPeriodCore() == null) coreIndexBackDO.setPeriodCore("0");
-            if (coreIndexBackDO.getFinalCalCore() == null) coreIndexBackDO.setFinalCalCore("0.00");
-            if (coreIndexBackDO.getIsDeleted() == null) coreIndexBackDO.setIsDeleted(0);
-            if (coreIndexBackDO.getShowTimes() == null) coreIndexBackDO.setShowTimes(0);
-            if (coreIndexBackDO.getReportDate() == null) coreIndexBackDO.setReportDate(new SimpleDateFormat("YYYYMMdd").parse(reportDate));
-//            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYYMMdd").parse(reportDate);
-//            Date date = simpleDateFormat.parse(reportDate);
-//            System.out.println(date);
-        }
+    /**
+     * 将上一期的数据原封不动插入到历史表中
+     */
+    private void backupCoreIndex() {
+        log.info("开始备份上期数据");
+        baseMapper.backupCoreIndex();
     }
 
     /**
      * 根据执行策略组装或新增数据
-     *
      * @param coreIndexBackList
      * @param excelDataList
+     * @return
      */
     private List<CoreIndexBackDO> assembleData(List<CoreIndexBackDO> coreIndexBackList, List<Object> excelDataList) {
         log.info("开始组装数据-新增或更新");
         List<CoreIndexBackDO> returnList = new ArrayList<>();
         Map<String, CoreIndexBackDO> coreIndexBackMap = coreIndexBackList.stream().
-                collect(Collectors.toMap(CoreIndexBackDO::getCode, CoreIndexBackDO -> CoreIndexBackDO));
+                collect(Collectors.toMap(CoreIndexBackDO::getCode, coreIndexBackDO->coreIndexBackDO));
         // 如果表中存在当前股票数据，则更新数据，否则添加
-        for (Object excelData : excelDataList) {
+        for(Object excelData : excelDataList) {
             String code = ((CoreIndexBackDO) excelData).getCode();
-            if (coreIndexBackMap.containsKey(code)) {
+            // excel中不存在，但表中存在的数据，更新展示状态：1-不展示
+            if(coreIndexBackMap.containsKey(code)) {
                 modifyExcelData(coreIndexBackMap.get(code), ((CoreIndexBackDO) excelData));
-            } else {
+                ((CoreIndexBackDO) excelData).setUpdateTime(new Date());
+            }else {
                 addExcelData(((CoreIndexBackDO) excelData));
             }
             returnList.add((CoreIndexBackDO) excelData);
         }
+        // 向集合中追加excel中不存在，但表中存在的数据
+        returnList.addAll(getExcelDataListNotInTable(getExcelCodeList(excelDataList), coreIndexBackMap));
         return returnList;
     }
 
     /**
-     * 添加新数据
-     *
-     * @param excelData
-     */
-    private void addExcelData(CoreIndexBackDO excelData) {
-        excelData.setIsDeleted(0);
-        excelData.setPeriodCore("0");
-        excelData.setFinalCalCore("0.00");
-        excelData.setStatus("1");
-        excelData.setShowTimes(0);
-        excelData.setCreateTime(new Date());
-        excelData.setUpdateTime(new Date());
-    }
-
-    /**
      * 根据执行策略修改数据
-     *
      * @param coreIndexBackData
      * @param excelData
      */
     private void modifyExcelData(CoreIndexBackDO coreIndexBackData, CoreIndexBackDO excelData) {
-        if (coreIndexBackData.getCode().equals(excelData.getCode())) {
+        if(coreIndexBackData.getCode().equals(excelData.getCode())) {
             // 判断excel是否上传当期核心指标，没传递则将status状态修改成：1-不展示
-            if (!StringUtils.hasLength(excelData.getCurrentCore())) {
+            if(!StringUtils.hasLength(excelData.getCurrentCore())) {
                 excelData.setStatus(FileLogoConstant.SHOW_STATUS_ONE);
                 excelData.setPeriodCore(coreIndexBackData.getPeriodCore());
                 excelData.setCurrentCore(coreIndexBackData.getCurrentCore());
@@ -187,7 +162,7 @@ public class CoreIndexBack {
                 return;
             }
             // 判断查询出的核心指标是否为空字符，为空则将status修改成：1-不展示
-            if (!StringUtils.hasLength(coreIndexBackData.getCurrentCore())) {
+            if(!StringUtils.hasLength(coreIndexBackData.getCurrentCore())) {
                 excelData.setStatus(FileLogoConstant.SHOW_STATUS_ONE);
                 // 上期核心指标换成当期核心指标
                 excelData.setPeriodCore(coreIndexBackData.getCurrentCore());
@@ -198,7 +173,7 @@ public class CoreIndexBack {
             // 将表中current_core的值与excel中的核心指标进行对比：如果不一样则进行计算
             String currentCore = coreIndexBackData.getCurrentCore();
             String excelCurrentCore = excelData.getCurrentCore();
-            if (!currentCore.equals(excelCurrentCore)) {
+            if(!currentCore.equals(excelCurrentCore)) {
                 // 将current_core的数据赋值给period_core
                 excelData.setPeriodCore(currentCore);
                 // 计算：(current_core - period_core) / period_core 结果保留2为小数
@@ -209,66 +184,112 @@ public class CoreIndexBack {
                 excelData.setFinalCalCore(String.valueOf(finalCalCore));
                 // 执行核心策略
                 exeCoreStrategy(coreIndexBackData, excelData);
-                // 执行连续减少策略
-                exeConRedStrategy(coreIndexBackData, excelData);
-            } else {
-                // 当excel上传的核心指标与上次的核心指标一样，则保留上次的展示结果
-                excelData = coreIndexBackData;
+            }else {
+                // 当excel上传的核心指标与上次的核心指标一样，将展示结果修改为：1-不展示
+                excelData.setStatus(FileLogoConstant.SHOW_STATUS_ONE);
             }
-            excelData.setUpdateTime(new Date());
         }
     }
 
     /**
      * 执行核心策略
-     *
-     * @param coreIndexBackDate
+     * @param coreIndexBackData
      * @param excelData
      */
-    private void exeCoreStrategy(CoreIndexBackDO coreIndexBackDate, CoreIndexBackDO excelData) {
+    private void exeCoreStrategy(CoreIndexBackDO coreIndexBackData, CoreIndexBackDO excelData) {
         // 本期核心指数
         BigDecimal finalCalCore = new BigDecimal(excelData.getFinalCalCore());
         // coreStrategy-核心策略集合
         Map<String, String> tradingStrategyMap =
                 setStrategyContainer(FileLogoConstant.S_100000, FileLogoConstant.S_CORE);
+        // 获取核心策略
+        String strategy = tradingStrategyMap.get(coreIndexBackData.getCode());
+        // 如果策略中没有配置该股票代码，则取当前策略的通用策略
+        if(!StringUtils.hasLength(strategy)) {
+            strategy = tradingStrategyMap.get(FileLogoConstant.COMMON_CODE);
+        }
         // 将计算结果小于 -0.1 的status状态修改成：0-展示  否则修改成：1-不展示
-        String s = tradingStrategyMap.get(coreIndexBackDate.getCode());
-        System.out.println(coreIndexBackDate.getCode());
-        System.out.println(s);
-        BigDecimal bigDecimal = new BigDecimal(tradingStrategyMap.get(coreIndexBackDate.getCode()));
-        if (finalCalCore.compareTo(new BigDecimal(tradingStrategyMap.get(coreIndexBackDate.getCode()))) <= 0) {
+        if(finalCalCore.compareTo(new BigDecimal(strategy)) <= 0) {
             excelData.setStatus(FileLogoConstant.SHOW_STATUS_ZERO);
-        } else {
+        }else {
             excelData.setStatus(FileLogoConstant.SHOW_STATUS_ONE);
         }
     }
 
     /**
-     * 执行连续减少策略
-     *
-     * @param coreIndexBackData
+     * 添加新数据
      * @param excelData
      */
-    private void exeConRedStrategy(CoreIndexBackDO coreIndexBackData, CoreIndexBackDO excelData) {
-        // 上期核心指数
-        BigDecimal lastCore = new BigDecimal(coreIndexBackData.getFinalCalCore());
-        // 本期核心指数
-        BigDecimal currentCore = new BigDecimal(excelData.getFinalCalCore());
-        // continueReductionStrategy-连续减少策略集合
-        Map<String, String> tradingStrategyMap =
-                setStrategyContainer(FileLogoConstant.S_100001, FileLogoConstant.S_CONTINUE_REDUCTION);
-        String strategy = tradingStrategyMap.get(coreIndexBackData.getCode());
-        // 当期和上期都小于或等于目标值的时候：0-展示  否则修改成：1-不展示
-        if (lastCore.compareTo(new BigDecimal(strategy)) <= 0 && currentCore.compareTo(new BigDecimal(strategy)) <= 0) {
-            excelData.setStatus(FileLogoConstant.SHOW_STATUS_ZERO);
-        } else {
-            excelData.setStatus(FileLogoConstant.SHOW_STATUS_ONE);
+    private void addExcelData(CoreIndexBackDO excelData) {
+        excelData.setIsDeleted(0);
+        excelData.setPeriodCore("0");
+        excelData.setFinalCalCore("0.00");
+        excelData.setStatus(FileLogoConstant.SHOW_STATUS_ONE);
+        excelData.setShowTimes(0);
+        excelData.setCreateTime(new Date());
+        excelData.setUpdateTime(new Date());
+    }
+
+    /**
+     * 判断excel中不存在，但表中存在的数据
+     * @param excelCodeList
+     * @param coreIndexMap
+     */
+    private List<CoreIndexBackDO> getExcelDataListNotInTable(List<String> excelCodeList, Map<String, CoreIndexBackDO> coreIndexMap) {
+        List<CoreIndexBackDO> returnList = new ArrayList<>();
+        for(String coreIndexCode : coreIndexMap.keySet()) {
+            if(!excelCodeList.contains(coreIndexCode)) {
+                CoreIndexBackDO coreIndexBackDO = coreIndexMap.get(coreIndexCode);
+                coreIndexBackDO.setStatus(FileLogoConstant.SHOW_STATUS_ONE);
+                coreIndexBackDO.setUpdateTime(new Date());
+                returnList.add(coreIndexBackDO);
+            }
         }
+        return returnList;
+    }
+
+    /**
+     * 获取excelCodeList
+     * @param excelDataList
+     * @return
+     */
+    private List<String> getExcelCodeList(List<Object> excelDataList) {
+        List<String> excelCodeList = new ArrayList<>();
+        for(Object excelData : excelDataList) {
+            excelCodeList.add(((CoreIndexBackDO) excelData).getCode());
+        }
+        return excelCodeList;
+    }
+
+    /**
+     * 更新日期：获取日期和报告日期
+     * @param fileName
+     */
+    private void updateCalDate(String fileName) {
+        log.info("开始更新获取日期和报告日期");
+        String date = fileName.substring(8, 16);
+        baseMapper.updateCalDate(date, date);
+    }
+
+    /**
+     * 更新展示次数
+     */
+    private void updateShowTimes() {
+        log.info("更新展示次数");
+        baseMapper.updateShowTimes();
+    }
+
+    /**
+     * 更新期数
+     * @param filePeriods
+     */
+    private void updatePeriods(Integer filePeriods) {
+        log.info("更新期数");
+        baseMapper.updatePeriods(filePeriods);
     }
 
     /**
      * 设置策略容器
-     *
      * @param strategyId
      * @param strategyType
      */
@@ -282,16 +303,5 @@ public class CoreIndexBack {
             this.strategyContainer.put(strategyType, tradingStrategyMap);
         }
         return strategyContainer.get(strategyType);
-    }
-
-    public static void main(String[] args) throws Exception {
-        //new CoreIndexBack().createOrUpdateCoreIndexBack();
-        String excelCurrentCore = "62505";
-        String currentCore = "13603";
-        BigDecimal finalCalCore = new BigDecimal(excelCurrentCore).
-                subtract(new BigDecimal(currentCore));
-        System.out.println(finalCalCore);
-        BigDecimal divide = finalCalCore.divide(new BigDecimal(currentCore),2, BigDecimal.ROUND_DOWN);
-        System.out.println(divide);
     }
 }
