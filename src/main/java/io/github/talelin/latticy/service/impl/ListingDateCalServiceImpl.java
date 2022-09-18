@@ -1,31 +1,28 @@
 package io.github.talelin.latticy.service.impl;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.github.talelin.latticy.mapper.ListingDateCalMapper;
-import io.github.talelin.latticy.model.ListingDateCalDo;
+import io.github.talelin.latticy.common.enumeration.CodeMessage;
+import io.github.talelin.latticy.common.util.ResultUtil;
+import io.github.talelin.latticy.scheduler.tasking.ListingIndex;
 import io.github.talelin.latticy.service.ListingDateCalService;
+import io.github.talelin.latticy.vo.ResultVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashMap;
-import java.util.List;
 
 @Service
-public class ListingDateCalServiceImpl extends ServiceImpl<ListingDateCalMapper, ListingDateCalDo> implements ListingDateCalService {
+public class ListingDateCalServiceImpl implements ListingDateCalService {
 
     @Autowired
-    private ListingDateCalMapper mbaListingDateCalMapper;
+    private ListingIndex listingIndex ;
 
-    /**
-     * 批量插入上市日期表数据
-     * @param bachMap
-     * @return
-     */
     @Override
-    @Transactional
-    public int insertBatchListingDateCal(List<HashMap<String, String>> bachMap) {
-        mbaListingDateCalMapper.insertBatchListingDateCal(bachMap);
-        return 0;
+    public ResultVo createOrUpdateListingDateCal() {
+        try {
+            listingIndex.createOrUpdateListingDateCal();
+        }catch (Exception e) {
+            return ResultUtil.getFailedVo(CodeMessage.LISTING_DATE_CAL_ERR.getCode(),
+                    CodeMessage.LISTING_DATE_CAL_ERR.getMessage());
+        }
+        return ResultUtil.getSuccessVo(CodeMessage.LISTING_DATE_CAL_SUCCESS.getCode(),
+                CodeMessage.LISTING_DATE_CAL_SUCCESS.getMessage());
     }
 }

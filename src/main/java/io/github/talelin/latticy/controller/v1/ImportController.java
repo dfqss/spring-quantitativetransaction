@@ -2,6 +2,7 @@ package io.github.talelin.latticy.controller.v1;
 
 import io.github.talelin.latticy.service.BatchFilesService;
 import io.github.talelin.latticy.service.CoreIndexService;
+import io.github.talelin.latticy.service.ListingDateCalService;
 import io.github.talelin.latticy.service.OtherIndexService;
 import io.github.talelin.latticy.vo.ResultVo;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,9 @@ public class ImportController {
 
     @Autowired
     private OtherIndexService otherIndexService ;
+
+    @Autowired
+    private ListingDateCalService listingDateCalService ;
 
     /**
      * 批量文件入库
@@ -54,5 +58,15 @@ public class ImportController {
     public ResultVo importOtherIndexData() {
         log.info("start service importOtherIndexData from api");
         return otherIndexService.createOrUpdateOtherIndex();
+    }
+
+    /**
+     * 读取上市日期数据
+     * @return
+     */
+    @PostMapping("importListingData")
+    public ResultVo importListingData() {
+        log.info("start service importListingData from api");
+        return listingDateCalService.createOrUpdateListingDateCal();
     }
 }

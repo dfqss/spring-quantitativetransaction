@@ -23,10 +23,10 @@ public class BatchFilesServiceImpl implements BatchFilesService {
         try {
             batchFiles.readFile();
         }catch (Exception e) {
-            return ResultUtil.getFailedVo(CodeMessage.CORE_INDEX_IMPORT_ERR.getCode(),
-                    CodeMessage.CORE_INDEX_IMPORT_ERR.getMessage());
+            return ResultUtil.getFailedVo(CodeMessage.READ_FILE_ERR.getCode(),
+                    CodeMessage.READ_FILE_ERR.getMessage());
         }
-        return ResultUtil.getSuccessVo(CodeMessage.CORE_INDEX_IMPORT_SUCCESS.getCode(),
-                CodeMessage.CORE_INDEX_IMPORT_SUCCESS.getMessage());
+        return ResultUtil.getSuccessVo(CodeMessage.READ_FILE_SUCCESS.getCode(),
+                CodeMessage.READ_FILE_SUCCESS.getMessage());
     }
 }
