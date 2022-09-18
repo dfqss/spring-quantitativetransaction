@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
-
 /**
  * 配置方法：
  *      @Scheduled(fixedRate=1000) -
@@ -35,23 +34,23 @@ public class ScheduleTask  {
     @Autowired
     private ListingIndex listingIndex;
 
-    @Autowired
-    private FinAnalysisIndexBack finAnalysisIndexBack;
-	
-	@Autowired
-    private CoreIndexBack coreIndexBack;
-
-	@Autowired
-    private RangeRiseCommon rangeRiseCommon;
-
-    @Async
-    @Scheduled(cron = "0/60 * * * * ?")
-    public void readCoreIndexExcel() {
-        batchFiles.readFile();
-    }
+//    @Autowired
+//    private FinAnalysisIndexBack finAnalysisIndexBack;
+//
+//	@Autowired
+//    private CoreIndexBack coreIndexBack;
+//
+//	@Autowired
+//    private RangeRiseCommon rangeRiseCommon;
 
 //    @Async
-//    @Scheduled(cron = "0/90 * * * * ?")
+//    @Scheduled(cron = "0/30 * * * * ?")
+//    public void readCoreIndexExcel() {
+//        batchFiles.readFile();
+//    }
+
+//    @Async
+//    @Scheduled(cron = "0/60 * * * * ?")
 //    public void importCoreIndexData() {
 //        try {
 //            coreIndex.createOrUpdateCoreIndex();
@@ -59,7 +58,6 @@ public class ScheduleTask  {
 //
 //        }
 //    }
-//
 //
 //    @Async
 //    @Scheduled(cron = "0/80 * * * * ?")
@@ -71,12 +69,16 @@ public class ScheduleTask  {
 //        }
 //    }
 
-//    @Async
-//    @Scheduled(cron = "0/2000 * * * * ?")
-//    public void importListingData() {
-//        listingIndex.createOrUpdateListingDateCal();
-//    }
+    @Async
+    @Scheduled(cron = "0/2000 * * * * ?")
+    public void importListingData() {
+        listingIndex.createOrUpdateListingDateCal();
+    }
 
+    /**
+     * 导入核心指标回测数据
+     * 本地执行的代码，打包到生产环境的时候需要将代码注释调，防止空跑任务浪费cpu资源
+     */
 //    @Async
 //    @Scheduled(cron = "0/20 * * * * ?")
 //    public void importCoreIndexBack() throws Exception {
@@ -87,8 +89,12 @@ public class ScheduleTask  {
 //        }
 //    }
 
+    /**
+     * 导入财务分析指标回测数据
+     * 本地执行的代码，打包到生产环境的时候需要将代码注释调，防止空跑任务浪费cpu资源
+     */
 //    @Async
-//    @Scheduled(cron = "0/15 * * * * ?")
+//    @Scheduled(cron = "0/20 * * * * ?")
 //    public void createOrUpdateFinAnalysisIndexBack() throws Exception {
 //        try {
 //            finAnalysisIndexBack.createOrUpdateFinAnalysisIndexBack();
@@ -97,8 +103,12 @@ public class ScheduleTask  {
 //        }
 //    }
 
+    /**
+     * 导入涨幅范围回测数据
+     * 本地执行的代码，打包到生产环境的时候需要将代码注释调，防止空跑任务浪费cpu资源
+     */
 //    @Async
-//    @Scheduled(cron = "0/15 * * * * ?")
+//    @Scheduled(cron = "0/25 * * * * ?")
 //    public void createOrUpdateRangeRiseCommon() throws Exception {
 //        try {
 //            rangeRiseCommon.createOrUpdateRangeRiseCommon();

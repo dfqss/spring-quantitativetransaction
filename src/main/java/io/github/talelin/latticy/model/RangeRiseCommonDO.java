@@ -9,7 +9,7 @@ import java.io.Serializable;
 @TableName("mba_range_rise_common")
 public class RangeRiseCommonDO extends MbaModel implements Serializable {
 
-    private static final long serialVersionUID = -80344864854819407L;
+    private static final long serialVersionUID = 163668558454961817L;
 
     // 股票编码
     private String code;
@@ -31,7 +31,6 @@ public class RangeRiseCommonDO extends MbaModel implements Serializable {
 
     // 季度涨幅
     private String quarterRise;
-
 
     // 半年涨幅
     private String halfYearRise;

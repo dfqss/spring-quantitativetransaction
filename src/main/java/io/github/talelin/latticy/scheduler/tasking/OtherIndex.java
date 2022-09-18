@@ -134,37 +134,4 @@ public class OtherIndex {
             startIndex = endIndex;
         }
     }
-
-
-    public static void main(String[] args) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-//        Class returnClass = FinAnalysisIndexDO.class;
-//        Class returnClass = GrowthIndexDO.class;
-//        Class returnClass = DupontAnalysisIndexDO.class;
-//        Class returnClass = StockValueDO.class;
-//        Class returnClass = TecAnalysisIndexDO.class;
-//        Class returnClass = IndustryClassDO.class;
-        Class returnClass = SecBasicIndexDO.class;
-
-
-        List<String> list1 = new ArrayList<>();
-        List<String> list2 = new ArrayList<>();
-        List<String> list3 = new ArrayList<>();
-        List<String> list4 = new ArrayList<>();
-        Method[] invokeMethods = returnClass.getMethods();
-        for(Method invokeMethod : invokeMethods) {
-            if(invokeMethod.getName().startsWith("set")) {
-                String fieldName = BaseUtil.lowerFirstCase(invokeMethod.getName().substring(3));
-                String otherIndexDO = "#{otherIndexDO." + BaseUtil.lowerFirstCase(invokeMethod.getName().substring(3)) + "}";
-                list1.add(fieldName);
-                list2.add(otherIndexDO);
-                list3.add(fieldName + "= values(" + fieldName + ")");
-                list4.add(invokeMethod.getName());
-            }
-        }
-        String[] s = list1.toArray(new String[list1.size()]);
-        System.out.println(s[1]);
-        System.out.println(list1);System.out.println(list2);System.out.println(list3);
-        System.out.println(list4);
-
-    }
 }

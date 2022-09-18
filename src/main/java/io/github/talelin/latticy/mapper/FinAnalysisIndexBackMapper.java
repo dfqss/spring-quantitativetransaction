@@ -10,5 +10,7 @@ import java.util.List;
 
 @Repository
 public interface FinAnalysisIndexBackMapper extends BaseMapper<FinAnalysisIndexBackDO> {
-    void saveOrUpdateBatch(@Param("batchList") List<FinAnalysisIndexBackDO> batchList);
+
+    // select periods from mba_core_index_hist ORDER BY periods desc LIMIT 1;
+
 }

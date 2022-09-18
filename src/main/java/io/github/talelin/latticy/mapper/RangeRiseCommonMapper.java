@@ -9,5 +9,6 @@ import java.util.List;
 
 @Repository
 public interface RangeRiseCommonMapper extends BaseMapper<RangeRiseCommonDO> {
-    void saveOrUpdateBatch(@Param("batchList") List<RangeRiseCommonDO> batchList);
+
+
 }
