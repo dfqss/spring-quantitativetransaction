@@ -174,4 +174,13 @@ public class FileLogoConstant {
     public static String[] FIN_ANALYSIS_INDEX_BACK_ARR = { // 回测财务分析指标
             "setCode", "setCodeName", "setRoeAvg"
     };
+
+    /**
+     * 上市日期
+     */
+    public static final String NEW_SHARES_N = "N"; // 新股
+
+    public static final String NEW_SHARES_F = "F"; // 非新股
+
+    public static final String NEW_SHARES_C = "C"; // 次新股
 }

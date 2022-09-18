@@ -58,7 +58,7 @@ public class ScheduleTask  {
 //
 //        }
 //    }
-//
+
 //    @Async
 //    @Scheduled(cron = "0/80 * * * * ?")
 //    public void importOtherIndexData() {
@@ -70,9 +70,13 @@ public class ScheduleTask  {
 //    }
 
     @Async
-    @Scheduled(cron = "0/2000 * * * * ?")
+    @Scheduled(cron = "0/20 * * * * ?")
     public void importListingData() {
-        listingIndex.createOrUpdateListingDateCal();
+        try {
+            listingIndex.createOrUpdateListingDateCal();
+        }catch (Exception e) {
+
+        }
     }
 
     /**
