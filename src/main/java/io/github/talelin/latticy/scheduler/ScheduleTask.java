@@ -43,34 +43,46 @@ public class ScheduleTask  {
 //	@Autowired
 //    private RangeRiseCommon rangeRiseCommon;
 
-//    @Async
-//    @Scheduled(cron = "0/30 * * * * ?")
-//    public void readCoreIndexExcel() {
-//        batchFiles.readFile();
-//    }
-
-//    @Async
-//    @Scheduled(cron = "0/60 * * * * ?")
-//    public void importCoreIndexData() {
-//        try {
-//            coreIndex.createOrUpdateCoreIndex();
-//        }catch (Exception e) {
-//
-//        }
-//    }
-
-//    @Async
-//    @Scheduled(cron = "0/80 * * * * ?")
-//    public void importOtherIndexData() {
-//        try {
-//            otherIndex.createOrUpdateOtherIndex();
-//        }catch (Exception e) {
-//
-//        }
-//    }
-
+    /**
+     * 指标文件入库（每1分钟读取一次）
+     */
     @Async
-    @Scheduled(cron = "0/20 * * * * ?")
+    @Scheduled(cron = "0/60 * * * * ?")
+    public void readCoreIndexExcel() {
+        batchFiles.readFile();
+    }
+
+    /**
+     * 读取核心指标文件（每2分钟读取一次）
+     */
+    @Async
+    @Scheduled(cron = "0/120 * * * * ?")
+    public void importCoreIndexData() {
+        try {
+            coreIndex.createOrUpdateCoreIndex();
+        }catch (Exception e) {
+
+        }
+    }
+
+    /**
+     * 读取其他指标文件（每3分钟读取一次）
+     */
+    @Async
+    @Scheduled(cron = "0/180 * * * * ?")
+    public void importOtherIndexData() {
+        try {
+            otherIndex.createOrUpdateOtherIndex();
+        }catch (Exception e) {
+
+        }
+    }
+
+    /**
+     * 读取上市日期指标数据（每12小时读取一次:43200秒）
+     */
+    @Async
+    @Scheduled(cron = "0/43200 * * * * ?")
     public void importListingData() {
         try {
             listingIndex.createOrUpdateListingDateCal();

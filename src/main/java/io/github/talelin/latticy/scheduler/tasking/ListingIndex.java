@@ -16,6 +16,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.File;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -43,8 +44,14 @@ public class ListingIndex extends ServiceImpl<ListingDateCalMapper, ListingDateC
     public void createOrUpdateListingDateCal() throws Exception {
         // 获取要读取文件的信息
         BatchFilesDO batchFilesDO = getBatchFile();
+        // 查询数据库的上市日期数据
+        List<ListingDateCalDo> listingDateCalList = listingDateCalMapper.selectList(null);
         if(null == batchFilesDO) {
-            log.info("没有需要计算的核心指标数据文件");
+            log.info("没有需要读取的上市日期文件");
+            log.info("------start 开始更新上市日期数据");
+            calculation(listingDateCalList, new ArrayList<>());
+            this.saveOrUpdateBatch(listingDateCalList);
+            log.info("end------更新上市日期完成");
             return;
         }
         // 获取文件路径、文件名称
@@ -53,19 +60,12 @@ public class ListingIndex extends ServiceImpl<ListingDateCalMapper, ListingDateC
         // 将数据更新为：毫秒值-[读取中]
         batchFiles.updateBatchFilesStatus(fileName,
                 String.valueOf(System.currentTimeMillis()), FileLogoConstant.READING);
-        log.info("------start 开始计算上市日期: " + fileName);
+        log.info("------start 开始计算上市日期数据: " + fileName);
         String fullName = filePath + File.separator + fileName;
         try {
             // 读取excel中上市日期的数据
             List<Object> excelDataList = ExcelUtil.
                     readExcel(new File(fullName), 0, 2, methods, ListingDateCalDo.class);
-            // 查询数据库的上日日期数据
-            List<ListingDateCalDo> listingDateCalList = listingDateCalMapper.selectList(null);
-            // 数据为空则跳出任务
-            if(CollectionUtils.isEmpty(listingDateCalList) && CollectionUtils.isEmpty(excelDataList)) {
-                log.info("excel文件和数据库的上市日期数据都为空！");
-                return;
-            }
             // 计算上市天数和是否新股
             calculation(listingDateCalList, excelDataList);
             // 批量更新和插入数据
@@ -102,9 +102,25 @@ public class ListingIndex extends ServiceImpl<ListingDateCalMapper, ListingDateC
      */
     private void calculation(List<ListingDateCalDo> listingDateCalList, List<Object> excelDataList)
             throws ParseException {
+        // 数据为空则跳出任务
+        if(CollectionUtils.isEmpty(listingDateCalList) && CollectionUtils.isEmpty(excelDataList)) {
+            log.info("excel文件和数据库的上市日期数据都为空！");
+            return;
+        }
+        // listingDateCalList为空则创建空对象
+        if(null == listingDateCalList) {
+            log.info("listingDateCalList为空");
+            listingDateCalList = new ArrayList<>();
+        }
+        // excelDataList为空则创建空对象
+        if(null == excelDataList) {
+            log.info("excelDataList为空");
+            excelDataList = new ArrayList<>();
+        }
         Map<String, ListingDateCalDo> listingDateCalMap = listingDateCalList.stream().
                 collect(Collectors.toMap(ListingDateCalDo::getCode, listingDateCalDo->listingDateCalDo));
         // 向集合中添加excel中新增的数据
+        log.info("上市日期EXCEL文件的数据条数:[" + excelDataList.size() + "]");
         for(Object excelData : excelDataList) {
             String code = ((ListingDateCalDo) excelData).getCode();
             String ipoDate = ((ListingDateCalDo) excelData).getIpoDate();
@@ -118,6 +134,7 @@ public class ListingIndex extends ServiceImpl<ListingDateCalMapper, ListingDateC
             }
         }
         // 计算上市天数和是否新股
+        log.info("开始计算上市天数和是否新股");
         for(ListingDateCalDo listingDateCal : listingDateCalList) {
             // 计算上市天数
             Integer listingDay = Integer.
